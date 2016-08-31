@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<resourceDescriptor critical="false" date="2016-08-23-07:00" description="Expression Editor" group="Jet Propulsion Laboratory, Caltech Resource" homePage="" id="75689" mdVersionMax="higher" mdVersionMin="12.5" name="ExpressionEditor" product="ExpressionEditor" restartMagicdraw="true" type="Plugin">
+    <version human="1.0.0" internal="1" resource="10"/>
+    <provider email="" homePage="" name="Jet Propulsion Laboratory, Caltech"/>
+    <edition>Reader</edition>
+    <edition>Community</edition>
+    <edition>Standard</edition>
+    <edition>Professional Java</edition>
+    <edition>Professional C++</edition>
+    <edition>Professional C#</edition>
+    <edition>Professional ArcStyler</edition>
+    <edition>Professional EFFS ArcStyler</edition>
+    <edition>OptimalJ</edition>
+    <edition>Professional</edition>
+    <edition>Architect</edition>
+    <edition>Enterprise</edition>
+    <installation>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/ExpressionEditor-plugin.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/ExpressionEditor-plugin.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/ams-fonts-1.0.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/ams-fonts-1.0.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/antlr-4.5.3-complete.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/antlr-4.5.3-complete.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/AppleJavaExtensions-1.2.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/AppleJavaExtensions-1.2.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/asciiMathML2Tree_Func_Equ.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/asciiMathML2Tree_Func_Equ.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-anim-1.7.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-anim-1.7.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-awt-util-1.7.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-awt-util-1.7.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-css-1.7.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-css-1.7.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-dom-1.7.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-dom-1.7.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-ext-1.7.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-ext-1.7.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-parser-1.7.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-parser-1.7.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-svg-dom-1.7.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-svg-dom-1.7.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-util-1.7.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-util-1.7.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-xml-1.7.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/batik-xml-1.7.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/commons-cli-1.2.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/commons-cli-1.2.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/commons-io-1.3.1.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/commons-io-1.3.1.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/commons-lang-2.4.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/commons-lang-2.4.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/commons-logging-1.1.1.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/commons-logging-1.1.1.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/dejavu-fonts-2.29.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/dejavu-fonts-2.29.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/jeuclid-cli-3.1.9.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/jeuclid-cli-3.1.9.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/jeuclid-core-3.1.9.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/jeuclid-core-3.1.9.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/jeuclid-mathviewer-3.1.9.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/jeuclid-mathviewer-3.1.9.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/stix-fonts-1.0-beta-2.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/stix-fonts-1.0-beta-2.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/xml-apis-1.3.04.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/xml-apis-1.3.04.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/xml-apis-ext-1.3.04.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/xml-apis-ext-1.3.04.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/xmlgraphics-commons-1.3.1.jar" to="plugins/gov.nasa.jpl.mbee.expressionEditor/lib/xmlgraphics-commons-1.3.1.jar"/>
+        <file from="plugins/gov.nasa.jpl.mbee.expressionEditor/plugin.xml" to="plugins/gov.nasa.jpl.mbee.expressionEditor/plugin.xml"/>
+        <file from="samples/ExpressionEditor/asciiMathExpExamples.mdzip" to="samples/ExpressionEditor/asciiMathExpExamples.mdzip"/>
+    </installation>
+</resourceDescriptor>
+
