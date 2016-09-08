@@ -1,0 +1,18 @@
+<plugin
+        id="gov.nasa.jpl.mbee.mdk.expression.plugin"
+        name="MDK Expression"
+        internalVersion="${internal.version}"
+        version="${human.version}"
+        provider-name="NASA / Jet Propulsion Laboratory / Caltech"
+        class-lookup="LocalFirst"
+        class="gov.nasa.jpl.mbee.mdk.expression.AddContextMenuButton">
+    <requires>
+        <api version="1.0"/>
+    </requires>
+
+    <runtime>
+        <!-- START AUTO-GENERATED -->
+        <!-- END AUTO-GENERATED -->
+    </runtime>
+
+</plugin>
