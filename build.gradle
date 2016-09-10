@@ -14,7 +14,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '4.4.0')
+        classpath group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '4.4.0'
+        classpath group: 'org.zeroturnaround', name: 'gradle-jrebel-plugin', version: '1.1.3'
     }
 }
 
@@ -24,9 +25,10 @@ apply plugin: 'antlr'
 apply plugin: 'distribution'
 apply plugin: 'com.jfrog.artifactory'
 apply plugin: 'maven-publish'
+apply plugin: 'rebel'
 
-version = currentVersion
-String internalVersion = project.hasProperty('buildNumber') ? project.getProperty('buildNumber') : System.currentTimeSeconds()
+version = humanVersion
+String buildNumber = project.hasProperty('buildNumber') ? project.getProperty('buildNumber') : System.currentTimeSeconds()
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -50,7 +52,7 @@ dependencies {
     preCompile group: 'gov.nasa.jpl.cae.magicdraw.packages', name: 'cae_md18_0_sp6_lib_patches', version: '1.2', ext: 'zip'
 
     //compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile fileTree(dir: 'build/dependency-cache/extracted', include: ['**/*.jar'])
+    compile fileTree(dir: 'build/dependency-cache/extracted', include: ['lib/**/*.jar','plugins/**/*.jar'])
     compile fileTree(dir: 'lib', include: ['*.jar'])
     compile group: 'net.sourceforge.jeuclid', name: 'jeuclid-core', version: '3.1.9'
     compile group: 'org.antlr', name: 'antlr4', version: '4.5.3'
@@ -86,46 +88,60 @@ task extractDependencies {
 }
 compileJava.dependsOn extractDependencies
 
-task preDist {
-    copy {
-        from 'src/main/dist/template'
-        into 'build/generated-dist'
-    }
-    copy {
-        from configurations.compile.resolvedConfiguration.resolvedArtifacts.file
-        into 'build/generated-dist/plugins/gov.nasa.jpl.mbee.mdk.expression/lib'
-    }
-    copy {
-        from jar
-        into 'build/generated-dist/plugins/gov.nasa.jpl.mbee.mdk.expression'
-    }
-    String pluginLibraries = ''
-    fileTree(dir: 'build/generated-dist/plugins/gov.nasa.jpl.mbee.mdk.expression', include: '**/*.jar').each { file ->
-        pluginLibraries += '\t\t<library name=\"' + file.absolutePath.replaceAll(/.*build\/generated-dist\/plugins\/gov\.nasa\.jpl\.mbee\.mdk\.expression\//, '') + '\"/>' + System.lineSeparator()
-    }
-    copy {
-        from 'src/main/dist/template/plugins/gov.nasa.jpl.mbee.mdk.expression/plugin.xml'
-        filter { String line -> line.replace('<!-- START AUTO-GENERATED -->', '<!-- START AUTO-GENERATED -->' + System.lineSeparator() + pluginLibraries) }
-        filter { String line -> line.replace('${human.version}', (String) version) }
-        filter { String line -> line.replace('${internal.version}', internalVersion) }
-        into 'build/generated-dist/plugins/gov.nasa.jpl.mbee.mdk.expression'
-    }
-    String descriptorFiles = ''
-    fileTree(dir: 'build/generated-dist').each { file ->
-        String relativePath = file.absolutePath.replaceAll(/.*build\/generated-dist\//, '');
-        // <file from="plugins/gov.nasa.jpl.mbee.mdk.expression/mdk-expression-1.0.0.jar" to="plugins/gov.nasa.jpl.mbee.mdk.expression/mdk-expression-1.0.0.jar"/>
-        descriptorFiles += '\t\t<file from=\"' + relativePath + '\" to=\"' + relativePath + '\"/>' + System.lineSeparator()
-    }
-    copy {
-        from 'src/main/dist/template/data/resourcemanager/MDR_Plugin_MDK_Expression_75689_descriptor.xml'
-        filter { String line -> line.replace('<!-- START AUTO-GENERATED -->', '<!-- START AUTO-GENERATED -->' + System.lineSeparator() + descriptorFiles) }
-        filter { String line -> line.replace('${human.version}', (String) version) }
-        filter { String line -> line.replace('${internal.version}', internalVersion) }
-        into 'build/generated-dist/data/resourcemanager'
+class PreDist extends DefaultTask {
+    String version
+    String internalVersion
+    String groupId
+    String descriptor
+
+    @TaskAction
+    public void executeTask() {
+        project.copy {
+            from 'src/main/dist/template'
+            into 'build/generated-dist'
+        }
+        project.copy {
+            from project.configurations.compile.resolvedConfiguration.resolvedArtifacts.file
+            into "build/generated-dist/plugins/${groupId}"
+        }
+        project.copy {
+            from project.jar
+            into "build/generated-dist/plugins/${groupId}"
+        }
+
+        String pluginLibraries = ''
+        project.fileTree(dir: "build/generated-dist/plugins/${groupId}", include: '**/*.jar').each { file ->
+            pluginLibraries += '\t\t<library name=\"' + file.absolutePath.replaceAll(/.*build\/generated-dist\/${groupId}/, '') + '\"/>' + System.lineSeparator()
+        }
+        project.copy {
+            from "src/main/dist/template/plugins/${groupId}/plugin.xml"
+            filter { String line -> line.replace('<!-- START AUTO-GENERATED -->', '<!-- START AUTO-GENERATED -->' + System.lineSeparator() + System.lineSeparator() + pluginLibraries) }
+            filter { String line -> line.replace('${human.version}', version) }
+            filter { String line -> line.replace('${internal.version}', internalVersion) }
+            into "build/generated-dist/plugins/${groupId}"
+        }
+
+        String descriptorFiles = ''
+        project.fileTree(dir: 'build/generated-dist').each { file ->
+            String relativePath = file.absolutePath.replaceAll(/.*build\/generated-dist\//, '');
+            descriptorFiles += '\t\t<file from=\"' + relativePath + '\" to=\"' + relativePath + '\"/>' + System.lineSeparator()
+        }
+        project.copy {
+            from "src/main/dist/template/data/resourcemanager/${descriptor}"
+            filter { String line -> line.replace('<!-- START AUTO-GENERATED -->', '<!-- START AUTO-GENERATED -->' + System.lineSeparator() + System.lineSeparator() + descriptorFiles) }
+            filter { String line -> line.replace('${human.version}', version) }
+            filter { String line -> line.replace('${internal.version}', internalVersion) }
+            into 'build/generated-dist/data/resourcemanager'
+        }
     }
 }
 
-preDist.dependsOn jar
+task preDist(type: PreDist, dependsOn: jar) {
+    version = humanVersion
+    internalVersion = buildNumber
+    groupId = 'gov.nasa.jpl.mbee.mdk.expression'
+    descriptor = 'MDR_Plugin_MDK_Expression_75689_descriptor.xml'
+}
 
 distributions {
     main {
@@ -136,6 +152,9 @@ distributions {
     }
 }
 
+assembleDist.dependsOn.remove distTar
+tasks.remove(distTar)
+
 distZip {
     includeEmptyDirs false
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
@@ -145,7 +164,6 @@ distZip {
 }
 
 distZip.dependsOn preDist
-distTar.dependsOn preDist
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
@@ -165,7 +183,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId 'gov.nasa.jpl.cae.magicdraw.plugins.mdk.expression'
             artifactId 'mdk-expression'
-            version currentVersion
+            version humanVersion
 
             from components.java
             artifact sourcesJar {
@@ -202,3 +220,33 @@ artifactory {
 }
 
 artifactoryPublish.dependsOn distZip
+
+installDist {
+    destinationDir = file('build/install')
+    doLast {
+        copy {
+            from 'build/install'
+            into 'build/dependency-cache/extracted'
+        }
+    }
+}
+
+installDist.dependsOn distZip
+
+task runApp(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    standardOutput = System.out
+    errorOutput = System.err
+
+    main = 'com.nomagic.magicdraw.Main'
+    jvmArgs = ['-Xmx2000M', '-Xss1024K', '-DLOCALCONFIG=true']
+    // arguments to pass to the application
+    args 'DEVELOPER'
+    workingDir = 'build/dependency-cache/extracted'
+
+    ignoreExitValue = true
+}
+
+runApp.dependsOn installDist
+runApp.dependsOn generateRebel
