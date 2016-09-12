@@ -97,6 +97,8 @@ class PreDist extends DefaultTask {
     @TaskAction
     public void executeTask() {
         project.copy {
+            from 'src/main/dist'
+            exclude 'template'
             from 'src/main/dist/template'
             into 'build/generated-dist'
         }
