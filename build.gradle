@@ -49,7 +49,7 @@ configurations {
 dependencies {
     antlr group: 'org.antlr', name: 'antlr4', version: '4.5.3'
 
-    preCompile group: 'gov.nasa.jpl.cae.magicdraw.packages', name: 'cae_md18_0_sp6_lib_patches', version: '1.2', ext: 'zip'
+	preCompile group: 'gov.nasa.jpl.cae.magicdraw.packages', name: 'cae_md18_4_vendor', version: '1.2', ext: 'zip'
 
     //compile fileTree(dir: 'libs', include: ['*.jar'])
     compile fileTree(dir: 'build/dependency-cache/extracted', include: ['lib/**/*.jar','plugins/**/*.jar'])
@@ -96,6 +96,7 @@ class PreDist extends DefaultTask {
 
     @TaskAction
     public void executeTask() {
+    
         project.copy {
             from 'src/main/dist'
             exclude 'template'
@@ -104,6 +105,7 @@ class PreDist extends DefaultTask {
         }
         project.copy {
             from project.configurations.compile.resolvedConfiguration.resolvedArtifacts.file
+            from 'lib'
             into "build/generated-dist/plugins/${groupId}"
         }
         project.copy {
@@ -224,30 +226,39 @@ artifactory {
 artifactoryPublish.dependsOn distZip
 
 installDist {
-    destinationDir = file('build/install')
+  installDist {
+    destinationDir = file('build/plugin')
     doLast {
         copy {
-            from 'build/install'
-            into 'build/dependency-cache/extracted'
-        }
+            fileMode 0755
+            from 'build/dependency-cache/extracted'
+            from 'build/plugin'
+            into 'build/install'
+        	}
+    	} 
     }
+    
 }
+
+
 
 installDist.dependsOn distZip
 
 task runApp(type: JavaExec) {
-    classpath = sourceSets.main.runtimeClasspath
+
+    classpath fileTree(dir: 'build/install', include: ['lib/**/*.jar'])
+    workingDir 'build/install'
+    ignoreExitValue true
 
     standardOutput = System.out
     errorOutput = System.err
 
-    main = 'com.nomagic.magicdraw.Main'
-    jvmArgs = ['-Xmx2000M', '-Xss1024K', '-DLOCALCONFIG=true']
+    main = 'com.nomagic.osgi.launcher.ProductionFrameworkLauncher'
+    jvmArgs = ['-Xmx4000M', '-Xss1024M', '-DLOCALCONFIG=true', '-DWINCONFIG=true', '-Djsse.enableSNIExtension=false', '-Djava.net.preferIPv4Stack=true', '-Dcom.sun.media.imageio.disableCodecLib=true', '-noverify', '-Dlocal.config.dir.ext=-dev', '-splash:data/splash.png', '-Dmd.class.path=$java.class.path', '-Dcom.nomagic.osgi.config.dir=configuration', '-Desi.system.config=data/application.conf', '-Dlogback.configurationFile=data/logback.xml', '-Dsun.locale.formatasdefault=true']
     // arguments to pass to the application
     args 'DEVELOPER'
-    workingDir = 'build/dependency-cache/extracted'
-
-    ignoreExitValue = true
+    
+    
 }
 
 runApp.dependsOn installDist

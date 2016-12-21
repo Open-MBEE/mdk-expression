@@ -1,251 +1,122 @@
 package gov.nasa.jpl.mbee.mdk.expression;
 
-import gov.nasa.jpl.mbee.mdk.expression.antlr.generated.ArithmeticBinaryParser;
+import javax.swing.JOptionPane;
+
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import com.nomagic.magicdraw.core.Application;
+import com.nomagic.uml2.ext.jmi.helpers.StereotypesHelper;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Element;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ElementValue;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Expression;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralReal;
+import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralString;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
+import com.nomagic.uml2.ext.magicdraw.compositestructures.mdports.Port;
+import com.nomagic.uml2.ext.magicdraw.mdprofiles.Stereotype;
 
 
-public class Tree2UMLExpression {
+public abstract class Tree2UMLExpression {
 	
-	private ParseTree root;
-	private Element[] operations, operands, functions;
-	private String[] operationsString, operandsString, customFuncString;
-	public static boolean error = false;
+	protected ParseTree root;
+	public boolean error;
+	MathEditorMain1Controller controller;
 	
-	public Tree2UMLExpression(ParseTree root, Element[] operations, Element[] operands, Element[] functions, String[] operationsString, String[] operandsString, String[] customFuncString){
+	public Tree2UMLExpression(MathEditorMain1Controller _controller, ParseTree root) {
 		this.root = root;
-		this.operations = operations;
-		this.operands = operands;
-		this.operationsString = operationsString;
-		this.operandsString = operandsString;
-		this.functions = functions;
-		this.customFuncString = customFuncString;
+		this.controller = _controller;
+		error = false;
 	}
 	
 	public ValueSpecification parse(){
-		error = false;
 		return traverse0(root);		
 	}
+	//Util functions
 	
-	private ValueSpecification traverse0(ParseTree n){
-		
-		//distinguish between the different cases defined in the grammar and set stop criteria
-		if(n instanceof ArithmeticBinaryParser.BinaryExp1Context || n instanceof ArithmeticBinaryParser.BinaryExp2Context
-				|| n instanceof ArithmeticBinaryParser.BinaryExp3Context || n instanceof ArithmeticBinaryParser.EqExpContext){	//=> BINARY EXPRESSION
-			
-			//************************************DO****************************************
-			Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
-			ElementValue elemVal = Application.getInstance().getProject().getElementsFactory().createElementValueInstance();
-			//find the correct operation
-			try{
-				int i = 0;
-				while(i<operationsString.length && !operationsString[i].equals(n.getChild(1).getText())){ i++; }
-				if(operationsString[i].equals(n.getChild(1).getText())){
-					elemVal.setElement(operations[i]);
-				}else{ throw new Exception(); }
-			}catch(Exception e){
-				javax.swing.JOptionPane.showMessageDialog(null, "Error: Couldn't find operation " + n.getChild(0).getText() + " in " + AddContextMenuButton.asciiMathLibraryBlock.getHumanName() + "!");
-				error = true;
-			}
-			//add operation to expression
-			exp.getOperand().add(elemVal);
-			
-			//*********************************TRAVERSE*************************************
-			exp.getOperand().add(traverse0(n.getChild(0)));	//left child
-			exp.getOperand().add(traverse0(n.getChild(2)));	//right child
-			
-			//**********************************RETURN**************************************
-			return exp;
-		
-		}else if(n instanceof ArithmeticBinaryParser.UnaryExpContext){	//=> UNARY EXPRESSION
-			
-			//************************************DO****************************************
-			Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
-			ElementValue elemVal = Application.getInstance().getProject().getElementsFactory().createElementValueInstance();
-			//find the correct operation
-			try{
-				int i = 0;
-				while(i<operationsString.length && !operationsString[i].equals(n.getChild(0).getChild(0).getText())){ i++; }
-				if(operationsString[i].equals(n.getChild(0).getChild(0).getText())){
-					elemVal.setElement(operations[i]);
-				}else{ throw new Exception(); }
-			}catch(Exception e){
-				javax.swing.JOptionPane.showMessageDialog(null, "Error: Couldn't find operation " + n.getChild(0).getText() + " in " + AddContextMenuButton.asciiMathLibraryBlock.getHumanName() + "!");
-				error = true;
-			}
-			//add operation to expression
-			exp.getOperand().add(elemVal);
-			
-			//*********************************TRAVERSE*************************************
-			exp.getOperand().add(traverse0(n.getChild(2)));
-			
-			//**********************************RETURN**************************************
-			return exp;
-		
-		}else if(n instanceof ArithmeticBinaryParser.FunExpContext){	//=> CUSTOMIZED FUNCTION EXPRESSION
-			
-			//************************************DO****************************************
-			Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
-			ElementValue elemVal = Application.getInstance().getProject().getElementsFactory().createElementValueInstance();
-			//find the correct operation
-			try{
-				int i = 0;
-				while(i<customFuncString.length && !customFuncString[i].equals(n.getChild(0).getText())){ 
-					i++; 
-				}
-				if(customFuncString[i].equals(n.getChild(0).getText())){
-					elemVal.setElement(functions[i]);
-				}else{ throw new Exception(); }
-			}catch(Exception e){
-				javax.swing.JOptionPane.showMessageDialog(null, "Error: Couldn't find function " + n.getChild(0).getText() + " in " + AddContextMenuButton.customFuncBlock.getHumanName() + "!");
-				error = true;
-			}
-			//add operation to expression
-			exp.getOperand().add(elemVal);
-			
-			//*********************************TRAVERSE*************************************
-			int max = n.getChildCount()-2;
-			for(int i=2; i<=max; i=i+2){
-				exp.getOperand().add(traverse0(n.getChild(i)));
-			}
-			//**********************************RETURN**************************************
-			return exp;
-			
-		}else if(n instanceof ArithmeticBinaryParser.ParExpContext){	//=> PARENTHESES EXPRESSION
-			
-			//**************************TRAVERSE AND RETURN*********************************
-			return traverse0(n.getChild(1));
-			
-		}else if(n instanceof ArithmeticBinaryParser.NegExpContext){	//=> NEGATIVE EXPRESSION
-			
-			//************************************DO****************************************
-			Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
-			ElementValue elemVal = Application.getInstance().getProject().getElementsFactory().createElementValueInstance();
-			//find the correct operation
-			try{
-				int i = 0;
-				while(i<operationsString.length && !operationsString[i].equals(n.getChild(0).getText())){ i++; }
-				if(operationsString[i].equals(n.getChild(0).getText())){
-					elemVal.setElement(operations[i]);
-				}else{ throw new Exception(); }
-			}catch(Exception e){
-				javax.swing.JOptionPane.showMessageDialog(null, "Error: Couldn't find operation " + n.getChild(0).getText() + " in " + AddContextMenuButton.asciiMathLibraryBlock.getHumanName() + "!");
-				error = true;
-			}
-			//add operation to expression
-			exp.getOperand().add(elemVal);
-			//*********************************TRAVERSE*************************************
-			exp.getOperand().add(traverse0(n.getChild(1)));
-			
-			//**********************************RETURN**************************************
-			return exp;
-						
-		}else if(n instanceof ArithmeticBinaryParser.NegLitExpContext){	//=> NEGATIVE LITERAL EXPRESSION
-			
-			//************************************DO****************************************
-			Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
-			ElementValue elemVal = Application.getInstance().getProject().getElementsFactory().createElementValueInstance();
-			//find the correct operation
-			try{
-				int i = 0;
-				while(i<operationsString.length && !operationsString[i].equals(n.getChild(0).getText())){ i++; }
-				if(operationsString[i].equals(n.getChild(0).getText())){
-					elemVal.setElement(operations[i]);
-				}else{ throw new Exception(); }
-			}catch(Exception e){
-				javax.swing.JOptionPane.showMessageDialog(null, "Error: Couldn't find operation " + n.getChild(0).getText() + " in " + AddContextMenuButton.asciiMathLibraryBlock.getHumanName() + "!");
-				error = true;
-			}
-			
-			try{	//LITERAL REAL
-				
-				//************************************DO****************************************
-				double lRealDouble = Double.parseDouble(n.getChild(1).getChild(0).getText());
-				LiteralReal lReal = Application.getInstance().getProject().getElementsFactory().createLiteralRealInstance();
-				lReal.setValue(lRealDouble);
-				
-				//add operation to expression
-				exp.getOperand().add(elemVal);
-				//add LiteralReal to expression
-				exp.getOperand().add(lReal);
-				
-				//**********************************RETURN**************************************
-				return exp;
-				
-			}catch(NumberFormatException e){	//ELEMENT VALUE
-								
-				//************************************DO****************************************
-				//find the correct operand
-				ElementValue elemVal1 = Application.getInstance().getProject().getElementsFactory().createElementValueInstance();
-				try{
-					int i = 0;
-					while(i<operandsString.length && !operandsString[i].equals(n.getChild(1).getChild(0).getText())){ i++; }
-					if(operandsString[i].equals(n.getChild(1).getChild(0).getText())){
-						elemVal1.setElement(operands[i]);
-					}else{ throw new Exception(); }
-				}catch(Exception e1){
-					javax.swing.JOptionPane.showMessageDialog(null, "Error: Couldn't find operand " + n.getChild(1).getChild(0).getText() + " in " + AddContextMenuButton.asciiMathLibraryBlock.getHumanName() + "!");
-					error = true;
-				}
-				
-				//add operation to expression
-				exp.getOperand().add(elemVal);
-				//add operand to expression
-				exp.getOperand().add(elemVal1);
-			
-				//**********************************RETURN**************************************
-				return exp;
-			}
-			
-			
-		}else if(n instanceof ArithmeticBinaryParser.LitExpContext){	//=> LITERAL EXPRESSION
-			
-			try{	//LITERAL REAL
-				
-				//************************************DO****************************************
-				double lRealDouble = Double.parseDouble(n.getChild(0).getText());
-				LiteralReal lReal = Application.getInstance().getProject().getElementsFactory().createLiteralRealInstance();
-				lReal.setValue(lRealDouble);
-				
-				//**********************************RETURN**************************************
-				return lReal;
-				
-			}catch(NumberFormatException e){	//ELEMENT VALUE
-				
-				//************************************DO****************************************
-				ElementValue elemVal = Application.getInstance().getProject().getElementsFactory().createElementValueInstance();
-				//find the correct operands
-				try{
-					int i = 0;
-					while(i<operandsString.length && !operandsString[i].equals(n.getChild(0).getText())){ i++; }
-					if(operandsString[i].equals(n.getChild(0).getText())){
-						elemVal.setElement(operands[i]);
-					}else{ throw new Exception(); }
-				}catch(Exception e1){
-					javax.swing.JOptionPane.showMessageDialog(null, "Error: Couldn't find operand " + n.getChild(0).getText() + " in " + AddContextMenuButton.asciiMathLibraryBlock.getHumanName() + "!");
-					error = true;
-				}
-				
-				//**********************************RETURN**************************************
-				return elemVal;
-			}
-			
-		}else{ //=> couldn't match any Expression => error
-			
-			javax.swing.JOptionPane.showMessageDialog(null, "Error: Couldn't match any Expression Context!");
-			error = true;
-			//javax.swing.JOptionPane.showMessageDialog(null, "class: " + n.getClass().toString());
-		
+	private ElementValue createElementValue(Element _lookingFor, String _lookingForName, Element _block){
+		ElementValue elemVal = Application.getInstance().getProject().getElementsFactory().createElementValueInstance();
+		if ( _lookingFor != null ){
+			elemVal.setElement(_lookingFor);
+			return elemVal;
 		}
-		
-		
-		return Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+		else {
+			showNotAbleToFindError(_lookingForName, _block);
+			return null;
+		}
 	}
 	
+	protected ElementValue createElementValueFromOperation(String _lookingForOperation, Element _block){
+		return createElementValue(controller.getCombinedOperation(_lookingForOperation), _lookingForOperation, _block);
+	}
+	
+	protected ElementValue createElementValueFromOperands(String _lookingForOperations, Element _block){
+		return createElementValue(controller.getOperand(_lookingForOperations), _lookingForOperations, _block);
+	}
+	public boolean getError(){
+		return this.error;
+	}
+	protected LiteralReal createLiteralReal(){
+		return Application.getInstance().getProject().getElementsFactory().createLiteralRealInstance();
+	}
+	protected LiteralString createLiteralString(){
+		return Application.getInstance().getProject().getElementsFactory().createLiteralStringInstance();
+	}
+	protected void showNotAbleToFindError(String _lookingForOperation, Element _block){
+		showNotAbleToFindError(_lookingForOperation, _block, "");
+	}
+	protected void showNotAbleToFindError(String _lookingForOperation, Element _block , String _appendMsg){
+		showMessage("Error: Couldn't find operation " + _lookingForOperation + " in " + _block.getHumanName() + "!");
+		error = true;
+	}
+	
+	protected static void showMessage(String _msg){
+		javax.swing.JOptionPane.showMessageDialog(null, _msg);
+	}
+	
+	protected void showNotAbleToCreateError(String _lookingForOperation, Element _constraintBlock){
+		showMessage("Not able to create " +  _lookingForOperation + " in " +  _constraintBlock.getHumanName() + "!");
+		error = true;
+	}
+	
+	protected static boolean askToCreateAConstraintParameter(String _name){
+		Object[] options = {"Yes", "No"};
+		int n = JOptionPane.showOptionDialog(null, "Would you like a constraint parameter " + _name + " to be created?",	"Question",
+		JOptionPane.YES_NO_OPTION,
+		JOptionPane.QUESTION_MESSAGE,
+		null,     //do not use a custom Icon
+		options,  //the titles of buttons
+		options[0]); //default button title
+		if ( n == JOptionPane.YES_OPTION)
+			return true;
+		else
+			return false;
+	}
+	protected ElementValue createConstaintParameter(String _lookingFor){
+		
+		ElementValue elemVal = Application.getInstance().getProject().getElementsFactory().createElementValueInstance();
+		Stereotype stereotype = StereotypesHelper.getStereotype(Application.getInstance().getProject(),MDSysMLConstants.CONSTRAINTPARAMETER);
+		System.out.println(stereotype.getHumanName());
+		Port p = Application.getInstance().getProject().getElementsFactory().createPortInstance();
+		p.setName(_lookingFor);
+		StereotypesHelper.addStereotype(p, stereotype);
+		p.setOwner(controller.getConstraintBlock());
+		p.setType((com.nomagic.uml2.ext.magicdraw.classes.mdkernel.DataType)Application.getInstance().getProject().getElementByID("_11_5EAPbeta_be00301_1147431819399_50461_1671")); //setAsReal
+		//Stereotype stereotype = MDCustomizationForSysMLProfile.getInstance(Application.getInstance().getProject()).getStereotype("ConstraintParameter");
+		elemVal.setElement(p);
+		return elemVal;
+	}
+	//end of Util functions
+	protected Expression createExpression (String _lookingForOperation, Element _block) {
+		
+		Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+		ElementValue elemVal = createElementValueFromOperation(_lookingForOperation, _block);
+		if (elemVal != null) {
+			//add operation to expression
+			exp.getOperand().add(elemVal);
+			return exp;
+		}
+		return null;
+	}
+	
+	protected abstract ValueSpecification traverse0(ParseTree n);
 }

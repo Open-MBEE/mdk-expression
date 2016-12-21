@@ -7,7 +7,7 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Element;
 
 
 
-public class AddContextMenuButton extends Plugin{
+public class AddContextMenuButton extends Plugin {
 
 	public static Element asciiMathLibraryBlock = null, customFuncBlock = null;
 	
