@@ -94,7 +94,10 @@ public class MathEditorMain1Model {
 	public Element getCombinedOperation(String _lookingfor){
 		return this.combinedOperationsMap.get(_lookingfor);
 	}
-	
+	public void setCurrentConstraintName(String _name){
+		if ( this.currentConstraint.getName().compareTo(_name) != 0)
+			this.currentConstraint.setName(_name);
+	}
 	
 	private void setExpression() {
 		
@@ -132,6 +135,9 @@ public class MathEditorMain1Model {
 	}
 	public boolean isStringExpression(){ //for selecting "prefix Exp" or "infix String Exp" bullet 
 		return this.isStringExpression;
+	}
+	public String getName(){
+		return this.currentConstraint.getName();
 	}
 	
 }

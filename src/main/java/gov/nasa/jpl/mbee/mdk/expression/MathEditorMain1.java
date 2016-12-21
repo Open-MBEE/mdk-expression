@@ -22,7 +22,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.Toolkit;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
@@ -46,7 +49,25 @@ import java.io.IOException;
 public class MathEditorMain1 {
 
 	private JFrame frmMathEditor;
+	private JTextField nameField;
+	private JButton btnName;
 	private JTextField textExpression;
+	
+	public enum nameButton {
+	    SAVE("Save"),
+	    EDIT("Edit");
+
+	    private String buttonName;
+
+	    nameButton(String _buttonName) {
+	        this.buttonName = _buttonName;
+	    }
+
+	    public String buttonName() {
+	        return buttonName;
+	    }
+	}
+	
 	private JList<String> list_1;
 	private JList<String> list;
 	private JLabel lblRender;
@@ -99,24 +120,76 @@ public class MathEditorMain1 {
 		textExpression.setFocusTraversalKeysEnabled(false);//keep cursor in the text field
 		textExpression.setColumns(10);
 		
-		Dimension level0 = new Dimension(600, 400);
+		nameField = new JTextField() {
+			@Override
+			 public Dimension getPreferredSize() {
+			    	
+					int fontsize = defaultFontSize;
+			    	if ( this.getParent() != null && this.getParent().getSize().width > 440)	{
+			    		Double ratio = (new Double(this.getParent().getSize().width/440.0));
+			    		fontsize = ratio.intValue() + fontsize;
+			    	}
+					this.setFont(MathEditorMain1.this.getFont(fontsize));
+			    	
+			        return super.getPreferredSize();
+			    }
+		};
+		nameField.setColumns(10);
+		nameField.setEditable(false);
+		
+		btnName = new JButton("Edit");
+		btnName.addActionListener(controller);;
+		btnName.setFont(getFont(defaultFontSize));
+		
+	
+		
+		
+		Dimension level0 = new Dimension(600, 460);
 		mainPane.setPreferredSize(level0);
 		mainPane.setSize(level0);
 	
 				
 		//TopPanel
-		Dimension level1_top = new Dimension(600,60);
+		Dimension level1_top = new Dimension(600,110);
 		JPanel topPanel = new ResizablePanel(level1_top, level0);
 		topPanel.setPreferredSize(level1_top);
 		
 		
-		Dimension level1_top_L = new Dimension(440, 50);
-		Dimension level1_top_R = new Dimension(140, 50);
+		Dimension level1_top_L = new Dimension(440, 100);
+		Dimension level1_top_R = new Dimension(140, 100);
 		JPanel topLeftPanel = new ResizablePanel(level1_top_L, level1_top);
 		topLeftPanel.setLayout(new BorderLayout());
-		topLeftPanel.setBorder(BorderFactory.createTitledBorder("Enter asciiMathML Expression:"));
 		topLeftPanel.setLayout(new BoxLayout(topLeftPanel, BoxLayout.PAGE_AXIS));
-		topLeftPanel.add(textExpression, BorderLayout.CENTER);
+			
+		
+		JPanel topLeftTopPanel = new JPanel();
+		topLeftTopPanel.setBorder(BorderFactory.createTitledBorder("Name:"));
+		topLeftTopPanel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1.0;   
+		c.anchor = GridBagConstraints.PAGE_START; //bottom of space
+		c.gridx = 0;       
+		c.gridwidth = 10;   
+		c.gridy = 0;       
+		topLeftTopPanel.add(nameField, c);
+		c.anchor = GridBagConstraints.PAGE_END;
+		c.gridx = 10;       
+		c.gridwidth = 1;   
+		c.gridy = 0;       
+		c.weightx = 0.1;   
+		c.insets = new Insets(0,10,0,0);  //top padding
+		topLeftTopPanel.add(btnName, c);
+		
+		JPanel topLeftBottomPanel = new JPanel();
+		topLeftBottomPanel.setBorder(BorderFactory.createTitledBorder("Enter asciiMathML Expression:"));
+		topLeftBottomPanel.setLayout(new BoxLayout(topLeftBottomPanel, BoxLayout.PAGE_AXIS));
+		topLeftBottomPanel.add(textExpression, BorderLayout.CENTER);
+		
+		
+		topLeftPanel.add(topLeftTopPanel, BorderLayout.CENTER);
+		topLeftPanel.add(topLeftBottomPanel, BorderLayout.CENTER);
+		
 		
 		
 		JPanel topRightPanel = new ResizablePanel(level1_top_R, level1_top);
@@ -228,6 +301,7 @@ public class MathEditorMain1 {
 			}
 		});
 		btnClose.setFont(getFont(defaultFontSize));
+		
 
 		GridLayout gridlayout = new GridLayout(1,2);
 		gridlayout.setHgap(10);
@@ -261,7 +335,7 @@ public class MathEditorMain1 {
 	}
 	
 
-	public void displayExpression(String _editExpression, boolean _isStringExpression){
+	public void displayExpression(String _editExpression, boolean _isStringExpression, String _name){
 			
 		if (_editExpression.length() != 0 ){
 			if(_isStringExpression){
@@ -271,6 +345,7 @@ public class MathEditorMain1 {
 			}
 			
 			textExpression.setText(_editExpression);
+			nameField.setText(_name);
 			
 			//**************************RENDER EXPRESSION************************
 			AsciiMathParser amp = new AsciiMathParser();
@@ -291,11 +366,20 @@ public class MathEditorMain1 {
 		
 		
 	}
+	public void setNameFileldEditable(boolean _b){
+		this.nameField.setEditable(_b);
+	}
+	public void setButtonName(String _buttonName){
+		this.btnName.setText(_buttonName);
+	}
 	public boolean isPrefixExpSelected(){
 		if(rdbtnPrefixExp.isSelected()) 
 			return true;
 		else
 			return false;
+	}
+	public String getName(){
+		return this.nameField.getText();
 	}
 	public String getTextExpression(){
 		return this.textExpression.getText();
