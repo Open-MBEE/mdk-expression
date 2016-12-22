@@ -24,7 +24,6 @@ import java.awt.Toolkit;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -140,23 +139,17 @@ public class MathEditorMain1 {
 		btnName = new JButton("Edit");
 		btnName.addActionListener(controller);;
 		btnName.setFont(getFont(defaultFontSize));
-		
-	
-		
-		
+			
 		Dimension level0 = new Dimension(600, 460);
 		mainPane.setPreferredSize(level0);
 		mainPane.setSize(level0);
-	
 				
 		//TopPanel
-		Dimension level1_top = new Dimension(600,110);
+		Dimension level1_top = new Dimension(600,100);
 		JPanel topPanel = new ResizablePanel(level1_top, level0);
 		topPanel.setPreferredSize(level1_top);
-		
-		
-		Dimension level1_top_L = new Dimension(440, 100);
-		Dimension level1_top_R = new Dimension(140, 100);
+
+		Dimension level1_top_L = new Dimension(600, 100);
 		JPanel topLeftPanel = new ResizablePanel(level1_top_L, level1_top);
 		topLeftPanel.setLayout(new BorderLayout());
 		topLeftPanel.setLayout(new BoxLayout(topLeftPanel, BoxLayout.PAGE_AXIS));
@@ -178,7 +171,7 @@ public class MathEditorMain1 {
 		c.gridwidth = 1;   
 		c.gridy = 0;       
 		c.weightx = 0.1;   
-		c.insets = new Insets(0,10,0,0);  //top padding
+		c.insets = new Insets(0,10,0,0);  
 		topLeftTopPanel.add(btnName, c);
 		
 		JPanel topLeftBottomPanel = new JPanel();
@@ -190,37 +183,24 @@ public class MathEditorMain1 {
 		topLeftPanel.add(topLeftTopPanel, BorderLayout.CENTER);
 		topLeftPanel.add(topLeftBottomPanel, BorderLayout.CENTER);
 		
-		
-		
-		JPanel topRightPanel = new ResizablePanel(level1_top_R, level1_top);
-		topRightPanel.setLayout(new BorderLayout());
 		JButton lbotton = new JButton("Libraries...");
 		lbotton.setFont(getFont(defaultFontSize));
 		lbotton.addActionListener(controller.getLibraryButtonActionListener());
-		topRightPanel.add(lbotton, BorderLayout.PAGE_END);
-		
 		topPanel.add(topLeftPanel);
-		topPanel.add(topRightPanel);
 		topLeftPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-		topRightPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-		
-		//topLeftPanel.setBackground(Color.GREEN);
-		//topRightPanel.setBackground(Color.GREEN);
-
 		
 		//Middle Panel
-		Dimension level1_middle = new Dimension(600,270);
-		JPanel middlePanel = new ResizablePanel(level1_middle, level0 );
+		Dimension level1_middle = new Dimension(600,306);
+		JPanel middlePanel = new ResizablePanel(level1_middle, level0);
 		//middlePanel.setBackground(Color.GREEN);
 		
-		Dimension level1_middle_L = new Dimension(440, 260);
-		Dimension level1_middle_R = new Dimension(140, 260);
+		Dimension level1_middle_L = new Dimension(450, 300);
+		Dimension level1_middle_R = new Dimension(140, 300);
 		//middleLeft
 		JPanel middleLeftPanel = new ResizablePanel(level1_middle_L, level1_middle);
 	
-		//middleLeftPanel.setLayout(new BoxLayout(middleLeftPanel, BoxLayout.PAGE_AXIS));
 		middleLeftPanel.setLayout(new BorderLayout());
-		middleLeftPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,5));
+		middleLeftPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 		middleLeftPanel.setBackground(Color.WHITE);
 		
 		lblRender = new JLabel();
@@ -235,7 +215,7 @@ public class MathEditorMain1 {
 		middlePanel.add(middleLeftPanel);
 		middlePanel.add(middleRightPanel);
 		
-		int rPanel_h = 260;
+		int rPanel_h = 290;
 		int rPanel_list_h = 130; 
 
 		JScrollPane scrollPaneOperands = new JScrollPane();
@@ -250,29 +230,25 @@ public class MathEditorMain1 {
 		JPanel top_listPane = createListPane ("Operands", rPanel_h, rPanel_list_h, scrollPaneOperands);
 		//Bottom Panel - Operations	
 		JPanel bottom_listPane = createListPane ("Operations: " , rPanel_h, rPanel_list_h, scrollPaneOperations);
-		//top_listPane.setBackground(Color.RED);
-		//bottom_listPane.setBackground(Color.RED);
 		
-		middleRightPanel.setLayout(new BoxLayout(middleRightPanel, BoxLayout.PAGE_AXIS));
-		middleRightPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,5));
+		middleRightPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+		middleRightPanel.add(lbotton);
 		middleRightPanel.add(top_listPane);
 		middleRightPanel.add(bottom_listPane);
 		
 		//Bottom Panel
-		Dimension level1_bottom = new Dimension(600, 60);
+		Dimension level1_bottom = new Dimension(600, 30);
 		JPanel bottomPanel = new ResizablePanel(level1_bottom, level0);
-		//bottomPanel.setBackground(Color.YELLOW);
-		
-		Dimension level1_bottom_L = new Dimension(290, 40);
-		Dimension level1_bottom_R = new Dimension(290, 40);
+
+		Dimension level1_bottom_L = new Dimension(290, 30);
+		Dimension level1_bottom_R = new Dimension(290, 30);
 		JPanel bottomLeftPanel = new ResizablePanel(level1_bottom_L, level1_bottom);
 		JPanel bottomRightPanel = new ResizablePanel(level1_bottom_R, level1_bottom);
-		bottomPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		bottomRightPanel.setLayout(new GridBagLayout());
+		bottomPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 		bottomPanel.add(bottomLeftPanel, BorderLayout.LINE_START);
-		//bottomPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 		bottomPanel.add(bottomRightPanel, BorderLayout.LINE_END);
-		bottomPanel.add(Box.createGlue());
-		
+
 		//bottomLeftPanel
 		rdbtnInfixStringExp = new JRadioButton("infix String Exp.");
 		rdbtnInfixStringExp.setFont(getFont(defaultFontSize));
@@ -284,7 +260,7 @@ public class MathEditorMain1 {
 		buttonGroup.add(rdbtnPrefixExp);
 		
 		bottomLeftPanel.setLayout(new BoxLayout(bottomLeftPanel, BoxLayout.LINE_AXIS));
-		bottomLeftPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,5));
+		bottomLeftPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 		bottomLeftPanel.add(rdbtnPrefixExp);
 		bottomLeftPanel.add(rdbtnInfixStringExp);
 		
@@ -302,27 +278,24 @@ public class MathEditorMain1 {
 		});
 		btnClose.setFont(getFont(defaultFontSize));
 		
-
-		GridLayout gridlayout = new GridLayout(1,2);
-		gridlayout.setHgap(10);
-		bottomRightPanel.setLayout(gridlayout);
-		bottomRightPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-		bottomRightPanel.add(btnClose);
-		bottomRightPanel.add(btnConfirm);
-		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;       //aligned with button 2
+		c.gridwidth = 1;   //2 columns wide
+		c.gridy = 1;       //third row
+		bottomRightPanel.add(btnClose, c);
+		c.gridx = 1;
+		bottomRightPanel.add(btnConfirm, c);
 		
 		//mainPane
-        mainPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
+        mainPane.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+        mainPane.add(Box.createRigidArea(new Dimension(0, 3)));
         mainPane.add(topPanel);
-        mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
+        mainPane.add(Box.createRigidArea(new Dimension(0, 3)));
         mainPane.add(middlePanel);
-        mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
+        mainPane.add(Box.createRigidArea(new Dimension(0, 3)));
         mainPane.add(bottomPanel);
                 
         mainPane.add(Box.createGlue());
-		
-		
 		
 		//addm main to frame
 		frmMathEditor.getContentPane().add(mainPane);
@@ -353,7 +326,7 @@ public class MathEditorMain1 {
 			Converter getPic = Converter.getInstance();
 			LayoutContextImpl l = (LayoutContextImpl) LayoutContextImpl.getDefaultLayoutContext();
 			l.setParameter(Parameter.MATHSIZE, 30);
-			BufferedImage pic;
+			BufferedImage pic;////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////.,mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
 			try {
 				pic = getPic.render(docExp, (LayoutContext) l);
 				lblRender.setIcon(new ImageIcon(pic));
@@ -363,9 +336,8 @@ public class MathEditorMain1 {
 			//*******************************************************************
 			
 		}
-		
-		
 	}
+	
 	public void setNameFileldEditable(boolean _b){
 		this.nameField.setEditable(_b);
 	}
@@ -447,13 +419,6 @@ public class MathEditorMain1 {
 			ratio_w = _d.width/new Double(_parent.width);
 			ratio_h = _d.height/new Double(_parent.height);
 			myC.setMinimumSize(_d);
-			
-			/*System.out.println("============" + _c.getClass().getName() + "================");
-			System.out.println(ratio_w + " " + ratio_h);
-			System.out.println("d: " + _d);
-			System.out.println("p: " + _parent);*/
-			
-		
 		}
 		private Dimension getCustomDimensions(){
 			Dimension d;
@@ -461,9 +426,6 @@ public class MathEditorMain1 {
 				d = new Dimension((new Double(parentD.width*ratio_w)).intValue(), (new Double(parentD.height*ratio_h)).intValue());
 			else
 				d = new Dimension((new Double(myC.getParent().getSize().width*ratio_w)).intValue(), (new Double(myC.getParent().getSize().height*ratio_h)).intValue());
-			/*System.out.println("============" + myC.getClass().getName() + "================");
-			System.out.println(myC.getX() + " " + myC.getY());
-			System.out.println( d);*/
 			return d;
 	    }
 	    public Dimension getMaximumSize(){

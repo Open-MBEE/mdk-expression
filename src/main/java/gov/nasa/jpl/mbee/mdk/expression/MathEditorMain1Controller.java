@@ -92,9 +92,6 @@ public class MathEditorMain1Controller implements ActionListener {
 	}
 	public void actionPerformed(ActionEvent e) {
 		
-		System.out.println(e.getSource());
-		System.out.println(e.getActionCommand());
-		
 		SessionManager.getInstance().createSession(e.getActionCommand());
 		
 		if ( e.getActionCommand() == "Confirm"){
