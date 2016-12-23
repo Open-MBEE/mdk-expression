@@ -45,28 +45,18 @@ public class MathEditorMain1Model {
 	private void setOperationAndCustromFunctions(java.util.Collection<Element> operationsCollection, java.util.Collection<Element> functionsCollection){
 		
 		combinedOperationsMap = new LinkedHashMap<String, Element>();
-		//List<Element> list = new ArrayList<Element>();
-		
-		//operationsCollection.forEach( c-> System.out.println(((Element)c).getHumanType()));
 		
     	operationsCollection.stream()
-			//.filter(c-> ((Element)c).getHumanName().startsWith(OPERATION))
-    		.filter(c-> ((Element)c).getHumanType().equals(MDSysMLConstants.OPERATION))
+			.filter(c-> ((Element)c).getHumanType().equals(MDSysMLConstants.OPERATION))
 			.forEach(c -> {
 				//combinedOperationsMap.put(c.getHumanName().substring(OPERATION.length()), (Element)c);
 				combinedOperationsMap.put(((NamedElement)c).getName(), (Element)c);
 			});
     	
-    	//combinedOperations =list;
-    	
-    	//customFunctionMap = new LinkedHashMap<String, Element>();
     	customFunctionsString = new ArrayList<String>();
     	functionsCollection.stream()
-			//.filter(c-> ((Element)c).getHumanName().startsWith(OPERATION))
-    		.filter(c-> ((Element)c).getHumanType().equals(MDSysMLConstants.OPERATION))
+			.filter(c-> ((Element)c).getHumanType().equals(MDSysMLConstants.OPERATION))
 			.forEach(c -> {
-				//customFunctionsString.add(c.getHumanName().substring(OPERATION.length()));
-				//combinedOperationsMap.put(c.getHumanName().substring(OPERATION.length()), (Element)c);
 				customFunctionsString.add(((NamedElement)c).getName());
 				combinedOperationsMap.put(((NamedElement)c).getName(), (Element)c);
 			});

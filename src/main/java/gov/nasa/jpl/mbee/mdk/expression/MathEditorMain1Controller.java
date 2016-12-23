@@ -62,7 +62,6 @@ public class MathEditorMain1Controller implements ActionListener {
 					List<String> words = model.getOperandsInString();
 					words.addAll(model.getCustomOperationsInString());
 					new AutoCompleteJTextField( view.getTextField(), words);
-					
 					view.displayExpression(model.getEditExpression(), model.isStringExpression(), model.getName());
 					
 				} catch (Exception e) {
@@ -94,7 +93,7 @@ public class MathEditorMain1Controller implements ActionListener {
 		
 		SessionManager.getInstance().createSession(e.getActionCommand());
 		
-		if ( e.getActionCommand() == "Confirm"){
+		if ( e.getActionCommand() == MathEditorMain1.CONFIRM){
 			String textExpression = view.getTextExpression();
 			AsciiMathML2Tree a2t = new AsciiMathML2Tree(textExpression);
 			ParseTree pt = a2t.parse();
@@ -137,6 +136,10 @@ public class MathEditorMain1Controller implements ActionListener {
 				}
 				//*******************************************************************
 			}
+			//save name in case it changed
+			this.model.setCurrentConstraintName(view.getName());
+			this.view.setButtonName(MathEditorMain1.nameButton.EDIT.buttonName());
+			this.view.setNameFileldEditable(false);
 		}
 		else if (  e.getActionCommand() == MathEditorMain1.nameButton.EDIT.buttonName()){
 			this.view.setNameFileldEditable(true);

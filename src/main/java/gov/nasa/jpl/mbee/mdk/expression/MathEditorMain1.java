@@ -52,10 +52,12 @@ public class MathEditorMain1 {
 	private JButton btnName;
 	private JTextField textExpression;
 	
+	public static final String CONFIRM ="Confirm";
+	
 	public enum nameButton {
 	    SAVE("Save"),
 	    EDIT("Edit");
-
+		
 	    private String buttonName;
 
 	    nameButton(String _buttonName) {
@@ -310,7 +312,8 @@ public class MathEditorMain1 {
 
 	public void displayExpression(String _editExpression, boolean _isStringExpression, String _name){
 			
-		if (_editExpression.length() != 0 ){
+		if ( _editExpression.length() != 0) {//means no expression yet = NEW constraint
+			
 			if(_isStringExpression){
 				rdbtnInfixStringExp.setSelected(true);
 			}else{
@@ -318,8 +321,7 @@ public class MathEditorMain1 {
 			}
 			
 			textExpression.setText(_editExpression);
-			nameField.setText(_name);
-			
+
 			//**************************RENDER EXPRESSION************************
 			AsciiMathParser amp = new AsciiMathParser();
 			Document docExp = amp.parseAsciiMath(textExpression.getText());
@@ -333,9 +335,13 @@ public class MathEditorMain1 {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			//*******************************************************************
-			
 		}
+		if ( _name.length() == 0) {//no expression more likely NEW costraint
+			setNameFileldEditable(true);
+			setButtonName(MathEditorMain1.nameButton.SAVE.buttonName());
+		}
+		else
+			nameField.setText(_name);
 	}
 	
 	public void setNameFileldEditable(boolean _b){
