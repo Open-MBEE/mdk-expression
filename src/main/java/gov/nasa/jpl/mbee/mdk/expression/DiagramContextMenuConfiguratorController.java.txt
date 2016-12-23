@@ -11,7 +11,7 @@ import com.nomagic.uml2.ext.magicdraw.compositestructures.mdinternalstructures.S
 
 public class DiagramContextMenuConfiguratorController {
 	
-	private final String NEW = "New...";
+	//private final String NEW = "New...";
 	
 	private SelectedConstraintBlock selectedConstraintBlock; //constraint selected by a user.
 	private Constraint selectedConstraint; //constraint selected from the selected constraint block.
@@ -20,7 +20,11 @@ public class DiagramContextMenuConfiguratorController {
 	{
 		this.selectedConstraintBlock = new SelectedConstraintBlock(_selectedContraintBlock);
 	}
-	//creating submenus
+	public SelectedConstraintBlock getSelectedConstraintBlock()
+	{
+		return this.selectedConstraintBlock;
+	}
+	/*//creating submenus
 	public void setActions(ActionsCategory _category){
 		//adding New
 		SimpleContextAction action = new SimpleContextAction(this, null, NEW);
@@ -29,13 +33,13 @@ public class DiagramContextMenuConfiguratorController {
 		selectedConstraintBlock.getConstraints().forEach(c -> { 	
 			_category.addAction(new SimpleContextAction(this, null, c.getName()));
 		});
-	}
-	public void setAction(ActionsCategory _category, Constraint _selectedConstraint){
+	}*/
+/*	public void setAction(ActionsCategory _category, Constraint _selectedConstraint){
 		_category.addAction(new SimpleContextAction(this, null, _selectedConstraint.getName()));
 		selectedConstraint = _selectedConstraint;
-	}
+	}*/
 	
-	public void handleAction(ActionEvent e) {
+	/*public void handleAction(ActionEvent e) {
 	
 		if ( selectedConstraint == null ){
 			String ACTION_COMMAND  = e.getActionCommand();
@@ -59,4 +63,4 @@ public class DiagramContextMenuConfiguratorController {
 		mathEditorController.showView();
 
 	}//end of handleAction
-}
+*/}
