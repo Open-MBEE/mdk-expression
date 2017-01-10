@@ -14,36 +14,91 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
 /// originally Tree2UMLExpressionInfix
 public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 	
-	public Tree2UMLExpression_Prefix(MathEditorMain1Controller _controller, ParseTree root) {
-		super(_controller, root);
+	public Tree2UMLExpression_Prefix(MathEditorMain1Controller _controller, ParseTree root, ValueSpecification _originalvs) {
+		super(_controller, root, _originalvs);
 	}
 	
 	protected ValueSpecification traverse0(ParseTree n){
 		
+		System.out.println(n.getClass().getName());
 		//distinguish between the different cases defined in the grammar and set stop criteria
 		if(n instanceof ArithmeticBinaryParser.BinaryExp1Context || n instanceof ArithmeticBinaryParser.BinaryExp2Context
 				|| n instanceof ArithmeticBinaryParser.BinaryExp3Context || n instanceof ArithmeticBinaryParser.EqExpContext){	//=> BINARY EXPRESSION
 			
+			ElementValue elemVal = createElementValueFromOperation(n.getChild(1).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+			if (elemVal != null) {
+				Expression exp;// = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+				if (isRoot){
+					exp = (Expression) originalvs;
+					isRoot = false;
+				}
+				else
+					exp =  Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+				//add operation to expression
+				exp.getOperand().add(elemVal);
+				exp.getOperand().add(traverse0(n.getChild(0)));	//left child
+				exp.getOperand().add(traverse0(n.getChild(2)));	//right child
+				return exp;
+			}
+			return null;
 			
-			Expression exp = createExpression(n.getChild(1).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+			
+			/*Expression exp = createExpression(n.getChild(1).getText(), AddContextMenuButton.asciiMathLibraryBlock);
 			if (exp != null){
 				//*********************************TRAVERSE*************************************
 				exp.getOperand().add(traverse0(n.getChild(0)));	//left child
 				exp.getOperand().add(traverse0(n.getChild(2)));	//right child
 			}
-			return exp;
+			return exp;*/
 			
 		}else if(n instanceof ArithmeticBinaryParser.UnaryExpContext){	//=> UNARY EXPRESSION
 			
-			Expression exp = createExpression(n.getChild(0).getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+			ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+			if (elemVal != null) {
+				Expression exp;// = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+				if (isRoot) {
+					exp = (Expression) originalvs;
+					isRoot = false;
+				}
+				else
+					exp =  Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+				//add operation to expression
+				exp.getOperand().add(elemVal);
+				exp.getOperand().add(traverse0(n.getChild(2)));
+				return exp;
+			}
+			
+			/*Expression exp = createExpression(n.getChild(0).getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
 			if (exp != null){
 				//*********************************TRAVERSE*************************************
 				exp.getOperand().add(traverse0(n.getChild(2)));
 			}
-			return exp;
+			return exp;*/
 		
 		}else if(n instanceof ArithmeticBinaryParser.FunExpContext){	//=> CUSTOMIZED FUNCTION EXPRESSION
 			
+
+			ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getText(), AddContextMenuButton.customFuncBlock);
+			if (elemVal != null) {
+				Expression exp;
+				if (isRoot){
+					exp = (Expression) originalvs;
+					isRoot = false;
+				}
+				else
+					exp =  Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+				//add operation to expression
+				exp.getOperand().add(elemVal);
+				//*********************************TRAVERSE*************************************
+				int max = n.getChildCount()-2;
+				for(int i=2; i<=max; i=i+2){
+					exp.getOperand().add(traverse0(n.getChild(i)));
+				}
+				
+				return exp;
+			}
+			
+			/*
 			Expression exp = createExpression(n.getChild(0).getText(), AddContextMenuButton.customFuncBlock);
 			if (exp != null){
 				//*********************************TRAVERSE*************************************
@@ -53,7 +108,7 @@ public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 				}
 			}
 			return exp;
-			
+			*/
 		}else if(n instanceof ArithmeticBinaryParser.ParExpContext){	//=> PARENTHESES EXPRESSION
 			
 			//**************************TRAVERSE AND RETURN*********************************
@@ -61,17 +116,66 @@ public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 			
 		}else if(n instanceof ArithmeticBinaryParser.NegExpContext){	//=> NEGATIVE EXPRESSION
 			
-			Expression exp = createExpression(n.getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+			ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+			if (elemVal != null) {
+				Expression exp;
+				if (isRoot){
+					exp = (Expression) originalvs;
+					isRoot = false;
+				}
+				else
+					exp =  Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+				//add operation to expression
+				exp.getOperand().add(elemVal);
+				exp.getOperand().add(traverse0(n.getChild(1)));
+				return exp;
+			}
+			
+			/*Expression exp = createExpression(n.getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
 			if (exp != null){
 				//*********************************TRAVERSE*************************************
 				exp.getOperand().add(traverse0(n.getChild(1)));
 			}
 			return exp;
-			
+			*/
 		}
 		else if(n instanceof ArithmeticBinaryParser.NegLitExpContext){	//=> NEGATIVE LITERAL EXPRESSION
 			
-			Expression exp = createExpression(n.getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+			
+			ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+			if (elemVal != null) {
+				Expression exp;
+				if (isRoot){
+					exp = (Expression) originalvs;
+					isRoot = false;
+				}
+				else
+					exp =  Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+				//add operation to expression
+				exp.getOperand().add(elemVal);
+				//LITERAL REAL
+				try {
+					double lRealDouble = Double.parseDouble(n.getChild(1).getChild(0).getText());
+					LiteralReal lReal = Application.getInstance().getProject().getElementsFactory().createLiteralRealInstance();
+					lReal.setValue(lRealDouble);
+					//add LiteralReal to expression
+					exp.getOperand().add(lReal);
+				}
+				catch(NumberFormatException e){	//ELEMENT VALUE
+					//************************************DO****************************************
+					//find the correct operand
+					ElementValue elemVal1 = createElementValueFromOperation(n.getChild(1).getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+					if ( elemVal1 != null)
+					{
+						//add operand to expression
+						exp.getOperand().add(elemVal1);
+					}
+				}
+				return exp;
+			}
+		
+			
+			/*Expression exp = createExpression(n.getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
 			
 			if ( exp != null ){
 				//LITERAL REAL
@@ -93,7 +197,7 @@ public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 					}
 				}
 			}
-			return exp;
+			return exp;*/
 		}
 		else if(n instanceof ArithmeticBinaryParser.LitExpContext){	//=> LITERAL EXPRESSION
 			

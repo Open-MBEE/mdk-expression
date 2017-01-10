@@ -8,7 +8,6 @@ import com.nomagic.magicdraw.core.Application;
 import com.nomagic.uml2.ext.jmi.helpers.StereotypesHelper;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Element;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ElementValue;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Expression;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralReal;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralString;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
@@ -21,11 +20,15 @@ public abstract class Tree2UMLExpression {
 	protected ParseTree root;
 	public boolean error;
 	MathEditorMain1Controller controller;
+	protected ValueSpecification originalvs;
+	boolean isRoot;
 	
-	public Tree2UMLExpression(MathEditorMain1Controller _controller, ParseTree root) {
+	public Tree2UMLExpression(MathEditorMain1Controller _controller, ParseTree root, ValueSpecification _originalvs) {
 		this.root = root;
 		this.controller = _controller;
 		error = false;
+		this.originalvs = _originalvs;
+		isRoot = true;
 	}
 	
 	public ValueSpecification parse(){
@@ -61,11 +64,15 @@ public abstract class Tree2UMLExpression {
 	protected LiteralString createLiteralString(){
 		return Application.getInstance().getProject().getElementsFactory().createLiteralStringInstance();
 	}
+	
 	protected void showNotAbleToFindError(String _lookingForOperation, Element _block){
 		showNotAbleToFindError(_lookingForOperation, _block, "");
 	}
 	protected void showNotAbleToFindError(String _lookingForOperation, Element _block , String _appendMsg){
-		showMessage("Error: Couldn't find operation " + _lookingForOperation + " in " + _block.getHumanName() + "!");
+		if ( _block != null)
+			showMessage("Error: Couldn't find operation " + _lookingForOperation + " in " + _block.getHumanName() + "!" + _appendMsg);
+		else
+			showMessage("Error: Couldn't find operation " + _lookingForOperation +  "!" + _appendMsg);
 		error = true;
 	}
 	
@@ -106,7 +113,7 @@ public abstract class Tree2UMLExpression {
 		return elemVal;
 	}
 	//end of Util functions
-	protected Expression createExpression (String _lookingForOperation, Element _block) {
+	/*protected Expression createExpression (String _lookingForOperation, Element _block) {
 		
 		Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
 		ElementValue elemVal = createElementValueFromOperation(_lookingForOperation, _block);
@@ -117,6 +124,6 @@ public abstract class Tree2UMLExpression {
 		}
 		return null;
 	}
-	
+	*/
 	protected abstract ValueSpecification traverse0(ParseTree n);
 }

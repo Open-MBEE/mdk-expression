@@ -4,6 +4,7 @@ import gov.nasa.jpl.mbee.mdk.expression.antlr.generated.ArithmeticBinaryParser;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import com.nomagic.magicdraw.core.Application;
+import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Element;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ElementValue;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Expression;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralReal;
@@ -13,8 +14,8 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
 
 public class Tree2UMLExpression_InfixString extends Tree2UMLExpression {
 	
-	public Tree2UMLExpression_InfixString(MathEditorMain1Controller _controller, ParseTree root){ 
-		super(_controller, root);
+	public Tree2UMLExpression_InfixString(MathEditorMain1Controller _controller, ParseTree root, ValueSpecification _originalvs){ 
+		super(_controller, root, _originalvs);
 	}
 	
 	public ValueSpecification parse(){
@@ -27,10 +28,17 @@ public class Tree2UMLExpression_InfixString extends Tree2UMLExpression {
 		if(n instanceof ArithmeticBinaryParser.BinaryExp1Context || n instanceof ArithmeticBinaryParser.BinaryExp2Context
 				|| n instanceof ArithmeticBinaryParser.BinaryExp3Context || n instanceof ArithmeticBinaryParser.EqExpContext){	//=> BINARY EXPRESSION
 			try {
+				
 				ElementValue elemVal = createElementValueFromOperation(n.getChild(1).getText(), null);
 				if ( elemVal != null)
 				{
-					Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+					Expression exp;// = exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+					if ( isRoot){
+						exp = (Expression) originalvs;
+						isRoot = false;
+					}
+					else 
+						exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
 					//*********************************TRAVERSE*************************************
 					exp.getOperand().add(traverse0(n.getChild(0)));	//left child
 	
@@ -40,10 +48,7 @@ public class Tree2UMLExpression_InfixString extends Tree2UMLExpression {
 					
 					//**********************************RETURN**************************************
 					return exp;
-				}
-				else
-					showNotAbleToFindError(n.getChild(1).getText(), AddContextMenuButton.asciiMathLibraryBlock );
-					return null;
+				}			
 			}
 			catch (Exception e){
 				e.printStackTrace();
@@ -58,7 +63,13 @@ public class Tree2UMLExpression_InfixString extends Tree2UMLExpression {
 				ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getChild(0).getText(), null);
 				if (elemVal != null){
 				
-					Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+					Expression exp;// = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+					if ( isRoot){
+						exp = (Expression) originalvs;
+						isRoot = false;
+					}
+					else
+						exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
 					LiteralString parL = Application.getInstance().getProject().getElementsFactory().createLiteralStringInstance();
 					parL.setValue("(");
 					LiteralString parR = Application.getInstance().getProject().getElementsFactory().createLiteralStringInstance();
@@ -75,14 +86,10 @@ public class Tree2UMLExpression_InfixString extends Tree2UMLExpression {
 					//**********************************RETURN**************************************
 					return exp;
 				}
-				else {
-					showNotAbleToFindError(n.getChild(0).getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
-					return null;
-				}
 			}
 			catch (Exception e){
 				e.printStackTrace();
-				showNotAbleToFindError(n.getChild(0).getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+				showNotAbleToFindError(n.getChild(0).getChild(0).getText(), AddContextMenuButton.customFuncBlock);
 				return null;
 			}
 		
@@ -92,7 +99,15 @@ public class Tree2UMLExpression_InfixString extends Tree2UMLExpression {
 			try{
 				ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getText(), AddContextMenuButton.customFuncBlock);
 				if ( elemVal != null){
-					Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+					
+					Expression exp;// = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+					if ( isRoot){
+						exp = (Expression) originalvs;
+						isRoot = false;
+					}
+					else
+						exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+					
 					LiteralString parL = createLiteralString();
 					parL.setValue("(");
 					LiteralString parR = createLiteralString();
@@ -118,10 +133,6 @@ public class Tree2UMLExpression_InfixString extends Tree2UMLExpression {
 					//**********************************RETURN**************************************
 					return exp;
 				}
-				else {
-					showNotAbleToFindError(n.getChild(0).getText(), AddContextMenuButton.customFuncBlock);
-					return null;	
-				}
 				
 			} catch(Exception e){
 				e.printStackTrace();
@@ -135,7 +146,14 @@ public class Tree2UMLExpression_InfixString extends Tree2UMLExpression {
 			
 			try {
 				//******************************DO AND TRAVERSE*********************************
-				Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+				Expression exp;// = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+				if ( isRoot){
+					exp = (Expression) originalvs;
+					isRoot = false;
+				}
+				else
+					exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+				
 				LiteralString parL = createLiteralString();
 				parL.setValue("(");
 				LiteralString parR = createLiteralString();
@@ -166,7 +184,15 @@ public class Tree2UMLExpression_InfixString extends Tree2UMLExpression {
 			try{
 				ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
 				if (elemVal != null){
-					Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+					
+					Expression exp;// = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+					if ( isRoot){
+						exp = (Expression) originalvs;
+						isRoot = false;
+					}
+					else
+						exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+					
 					//add operation to expression
 					exp.getOperand().add(elemVal);
 					//*********************************TRAVERSE*************************************
@@ -192,7 +218,13 @@ public class Tree2UMLExpression_InfixString extends Tree2UMLExpression {
 			try{
 				ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
 				if (elemVal != null){
-					Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+					Expression exp;// = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+					if ( isRoot){
+						exp = (Expression) originalvs;
+						isRoot = false;
+					}
+					else
+						exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
 					
 					try{	//LITERAL REAL
 						

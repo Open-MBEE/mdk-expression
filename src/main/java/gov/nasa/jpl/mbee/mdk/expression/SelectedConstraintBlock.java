@@ -32,9 +32,9 @@ public class SelectedConstraintBlock {
 		return constraints;
 	}
 
-	public void setConstraints(Collection<Constraint> constraints) {
+	/*public void setConstraints(Collection<Constraint> constraints) {
 		this.constraints = constraints;
-	}
+	}*/
 
 	public Collection<Property> getOperands() {
 		return ((StructuredClassifier)constraintBlock).getPart();
