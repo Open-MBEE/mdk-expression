@@ -262,20 +262,17 @@ public class MathEditorMain1 {
 		
 		rdbtnPrefixExp = new JRadioButton("prefix Exp.");
 		rdbtnPrefixExp.setFont(getFont(defaultFontSize));
-		rdbtnPrefixExp.setSelected(true);
 		buttonGroup.add(rdbtnPrefixExp);
 		
 		this.rdbtnPromelaltl= new JRadioButton("Promela-ltl");
 		this.rdbtnPromelaltl.setFont(getFont(defaultFontSize));
-		this.rdbtnPromelaltl.setSelected(true);
-		buttonGroup.add(this.rdbtnPromelaltl);
-		
+		//buttonGroup.add(this.rdbtnPromelaltl);
 		
 		bottomLeftPanel.setLayout(new BoxLayout(bottomLeftPanel, BoxLayout.LINE_AXIS));
 		bottomLeftPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 		bottomLeftPanel.add(rdbtnPrefixExp);
 		bottomLeftPanel.add(rdbtnInfixStringExp);
-		bottomLeftPanel.add(this.rdbtnPromelaltl);
+		//bottomLeftPanel.add(rdbtnPromelaltl);
 		
 		//bottomRightPanel
 		//Confirm
