@@ -96,24 +96,20 @@ public class MathEditorMain1Model {
 		
 		if ( firstElement instanceof Expression && ((Expression) firstElement).getOperand().size()!= 0 ) {
 
-			boolean valid = false;
-			
-			if ( firstElement instanceof StringExpression ){
+			UML2String uml2string;
+			if ( firstElement instanceof StringExpression ){ //1st operand is StringExpression
 				this.isStringExpression = true; //InfixStringExp
-				valid = true;
+				uml2string = new UMLStringExpression2String(((ValueSpecification) firstElement)); 
+				this.editExpression = uml2string.parse();
+				
 			}
-			else { //just Expression but not StringExpression
+			else { //1st operand is ElementValue
 				this.isStringExpression = false; //prefixExp
 				if (((Expression) firstElement).getOperand().get(0) instanceof ElementValue ){	//true if constraint is not empty
-					valid = true;
+					uml2string = new UMLExpression2String(((ValueSpecification) firstElement), customFunctionsString);	
+					this.editExpression = uml2string.parse();
 				}
 			}
-			if (valid){
-				UMLExpression2String uml2strg = new UMLExpression2String(((ValueSpecification) firstElement), customFunctionsString);	//give Expression to uml2string
-				this.editExpression = uml2strg.parse();
-			}
-			else
-				this.editExpression = "";
 		}
 		else {
 			this.editExpression =  "";
