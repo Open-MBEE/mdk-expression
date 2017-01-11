@@ -28,7 +28,7 @@ public abstract class Tree2UMLExpression {
 		this.controller = _controller;
 		error = false;
 		this.originalvs = _originalvs;
-		isRoot = true;
+		isRoot = false;
 	}
 	
 	public ValueSpecification parse(){
