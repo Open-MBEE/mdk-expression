@@ -10,18 +10,18 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralString;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.NamedElement;
 
-public class UMLExpression2String {
+public class UMLExpression2String extends UML2String {
 	
-	private String strg;
-	private ValueSpecification root;
+	//private String strg;
+	//private ValueSpecification root;
 	private final String OPERATIONS_PRES = "+ - * / ^";		//set a parenthesis if difference at which position they occur in the string is greater than 1!!!
-	
 	private List<String> customFunctionsString; //used only root is NOT StringExpression
-	
+		
 	public UMLExpression2String(ValueSpecification root, List<String> _customFunctionsString){
-		this.root = root;
+		super(root);
+		//this.root = root;
 		this.customFunctionsString = _customFunctionsString;
-		strg = "";
+		//strg = "";
 	}
 	
 	public String parse(){	
@@ -92,8 +92,8 @@ public class UMLExpression2String {
 			}// end of !LiteralString
 		}//end of if StringExpression
 		else if ( n instanceof Expression ){
-			//String currentNode =   ((ElementValue)((Expression)n).getOperand().get(0)).getElement().getHumanName().toString().substring(OPERATION.length());
 			String currentNode =  ((NamedElement) ((ElementValue)((Expression)n).getOperand().get(0)).getElement()).getName();
+			//String currentNode =  ((NamedElement) ((ElementValue)((Expression)n).getOperand().get(0)).getElement()).getName();
 			if (customFunctionsString.contains(currentNode))//CUSTOMIZED FUNCTION NODE
 			{
 				//**************************************DO & TRAVERSE********************************
