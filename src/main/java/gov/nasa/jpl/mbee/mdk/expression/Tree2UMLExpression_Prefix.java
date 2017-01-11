@@ -11,7 +11,7 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralReal;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Property;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
 
-/// originally Tree2UMLExpressionInfix
+
 public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 	
 	public Tree2UMLExpression_Prefix(MathEditorMain1Controller _controller, ParseTree root, ValueSpecification _originalvs) {
