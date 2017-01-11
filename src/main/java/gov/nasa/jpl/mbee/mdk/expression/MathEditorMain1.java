@@ -54,6 +54,10 @@ public class MathEditorMain1 {
 	
 	public static final String CONFIRM ="Confirm";
 	
+	public enum RadioButton {
+		PREFIX, INFIX, PROMELALTL;
+	}
+	
 	public enum nameButton {
 	    SAVE("Save"),
 	    EDIT("Edit");
@@ -75,7 +79,7 @@ public class MathEditorMain1 {
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	//private boolean infix = false, stringExp = false;
 	public static boolean setLibraries = false;
-	private JRadioButton rdbtnInfixStringExp, rdbtnPrefixExp;
+	private JRadioButton rdbtnInfixStringExp, rdbtnPrefixExp, rdbtnPromelaltl;
 
 	MathEditorMain1Controller controller;
 	ListModelOperands operandslistModel;
@@ -261,10 +265,17 @@ public class MathEditorMain1 {
 		rdbtnPrefixExp.setSelected(true);
 		buttonGroup.add(rdbtnPrefixExp);
 		
+		this.rdbtnPromelaltl= new JRadioButton("Promela-ltl");
+		this.rdbtnPromelaltl.setFont(getFont(defaultFontSize));
+		this.rdbtnPromelaltl.setSelected(true);
+		buttonGroup.add(this.rdbtnPromelaltl);
+		
+		
 		bottomLeftPanel.setLayout(new BoxLayout(bottomLeftPanel, BoxLayout.LINE_AXIS));
 		bottomLeftPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 		bottomLeftPanel.add(rdbtnPrefixExp);
 		bottomLeftPanel.add(rdbtnInfixStringExp);
+		bottomLeftPanel.add(this.rdbtnPromelaltl);
 		
 		//bottomRightPanel
 		//Confirm
@@ -350,11 +361,13 @@ public class MathEditorMain1 {
 	public void setButtonName(String _buttonName){
 		this.btnName.setText(_buttonName);
 	}
-	public boolean isPrefixExpSelected(){
+	public RadioButton selectedRadioButton(){
 		if(rdbtnPrefixExp.isSelected()) 
-			return true;
-		else
-			return false;
+			return RadioButton.PREFIX;
+		else if (rdbtnInfixStringExp.isSelected())
+			return RadioButton.INFIX;
+		else 
+			return RadioButton.PROMELALTL;
 	}
 	public String getName(){
 		return this.nameField.getText();
