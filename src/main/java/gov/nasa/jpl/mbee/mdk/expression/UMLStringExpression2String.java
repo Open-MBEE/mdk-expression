@@ -1,10 +1,15 @@
 package gov.nasa.jpl.mbee.mdk.expression;
 
+import java.util.List;
+
 import com.nomagic.uml2.ext.magicdraw.auxiliaryconstructs.mdtemplates.StringExpression;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ElementValue;
+import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Expression;
+import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralInteger;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralReal;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralString;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.NamedElement;
+import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Property;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
 
 public class UMLStringExpression2String extends UML2String {
@@ -24,10 +29,43 @@ public class UMLStringExpression2String extends UML2String {
 	}
 	
 	private void parse0(ValueSpecification n){
+		if(n instanceof StringExpression ) {
+			List<ValueSpecification> ops = ((StringExpression)n).getOperand();
+			for ( int i = 0; i < ops.size(); i++ ){
+				parse0(ops.get(i));
+			}
+		/*} else if(n instanceof Expression ) {
+			List<ValueSpecification> ops = ((Expression)n).getOperand();
+			for ( int i = 0; i < ops.size(); i++ ){
+				parse0(ops.get(i));
+			}*/
+		} else if(n instanceof ElementValue){	//leaf
+			strg += ((NamedElement)((ElementValue)n).getElement()).getName();	//get operand
+			return;
 		
-		if(n instanceof StringExpression && ((StringExpression)n).getOperand().size() == 3 
-				&& !(((StringExpression)n).getOperand().get(0) instanceof LiteralString)){		//BINARY NODE
-			
+		} else if(n instanceof LiteralString ) { //"(" is LiteralString
+			strg += ((LiteralString)n).getValue();
+			return;
+		} else if(n instanceof LiteralReal){		//leaf
+			strg += ((LiteralReal)n).getValue();	//get literal real
+			return;
+		} else if ( n instanceof LiteralInteger){
+			strg += ((LiteralInteger)n).getValue();	//get literal integer
+			return;
+		} /*else if ( n instanceof Property){ mw I don't remember why I added....?????  I don't think it is necessary
+			strg += ((Property)n).getName();
+			return;
+		}*/
+		
+	}
+}
+/*
+private void parse0(ValueSpecification n){
+
+if(n instanceof StringExpression ) {
+	if (!(((StringExpression)n).getOperand().get(0) instanceof LiteralString)) {
+		if ( ((StringExpression)n).getOperand().size() == 3	){		//BINARY NODE
+		
 			//**************************************DO & TRAVERSE********************************
 			parse0(((ValueSpecification)((StringExpression)n).getOperand().get(0)));	//left child
 			//strg += ((ElementValue)((StringExpression)n).getOperand().get(1)).getElement().getHumanName().toString().substring(OPERATION.length());	//get operation
@@ -36,10 +74,9 @@ public class UMLStringExpression2String extends UML2String {
 			
 			//****************************************RETURN*************************************
 			return;		
-			
-		}else if(n instanceof StringExpression && ((StringExpression)n).getOperand().size() == 4 
-				&& !(((StringExpression)n).getOperand().get(0) instanceof LiteralString)){		//UNARY NODE
-			
+		
+		} else if( ((StringExpression)n).getOperand().size() == 4 ){		//UNARY NODE
+		
 			//**************************************DO & TRAVERSE********************************
 			//strg += ((ElementValue)((StringExpression)n).getOperand().get(0)).getElement().getHumanName().toString().substring(OPERATION.length());	//get operation
 			strg += ((NamedElement)((ElementValue)((StringExpression)n).getOperand().get(0)).getElement()).getName();	//get operation
@@ -50,9 +87,8 @@ public class UMLStringExpression2String extends UML2String {
 			//****************************************RETURN*************************************
 			return;
 			
-		}else if(n instanceof StringExpression && ((StringExpression)n).getOperand().size() > 4 
-				&& !(((StringExpression)n).getOperand().get(0) instanceof LiteralString)){		//CUSTOMIZED FUNCTION (if lenght < 4 goes into unary node; could change that, but makes no difference for now; be aware of it though)
-			
+		} else if(((StringExpression)n).getOperand().size() > 4	){		//CUSTOMIZED FUNCTION (if lenght < 4 goes into unary node; could change that, but makes no difference for now; be aware of it though)
+		
 			//**************************************DO & TRAVERSE********************************
 			//strg += ((ElementValue)((StringExpression)n).getOperand().get(0)).getElement().getHumanName().toString().substring(OPERATION.length());	//get operation
 			strg += ((NamedElement)((ElementValue)((StringExpression)n).getOperand().get(0)).getElement()).getName();	//get operation
@@ -64,19 +100,7 @@ public class UMLStringExpression2String extends UML2String {
 			
 			//****************************************RETURN*************************************
 			return;
-			
-		}else if(n instanceof StringExpression && ((StringExpression)n).getOperand().get(0) instanceof LiteralString){	//LITERAL STRING
-			
-			//**************************************DO & TRAVERSE********************************			
-			for(int i=0; i<((StringExpression)n).getOperand().size(); i++){
-				parse0(((ValueSpecification)((StringExpression)n).getOperand().get(i)));	//child
-			}		
-			
-			//****************************************RETURN*************************************
-			return;
-			
-		}else if(n instanceof StringExpression && ((StringExpression)n).getOperand().size() == 2 
-				&& !(((StringExpression)n).getOperand().get(0) instanceof LiteralString)){ 		//NEGATIVE VALUE
+		} else if( ((StringExpression)n).getOperand().size() == 2 ){ 		//NEGATIVE VALUE
 			
 			//**************************************DO & TRAVERSE********************************
 			//strg += ((ElementValue)((StringExpression)n).getOperand().get(0)).getElement().getHumanName().toString().substring(OPERATION.length());
@@ -85,41 +109,57 @@ public class UMLStringExpression2String extends UML2String {
 			
 			//****************************************RETURN*************************************
 			return;
-			
-		}else if(n instanceof LiteralString && ((LiteralString)n).getValue().equals("(")){ 	//left parentheses (could be remove and put into //LITERAL STRING)
-			
-			strg += "(";
-			
-			return;
-
-		}else if(n instanceof LiteralString && ((LiteralString)n).getValue().equals(")")){ 	//right parentheses (could be remove and put into //LITERAL STRING)
-			
-			strg += ")";
-			
-			return;
-			
-		}else if(n instanceof LiteralString && ((LiteralString)n).getValue().equals(",")){ 	//comma (could be remove and put into //LITERAL STRING)
-			
-			strg += ",";
-			
-			return;
-			
-		}else if(n instanceof ElementValue){	//leaf
-			
-			//******************************************DO***************************************
-			strg += ((NamedElement)((ElementValue)n).getElement()).getName();	//get operand
-			
-			//****************************************RETURN*************************************
-			return;
-			
-		}else if(n instanceof LiteralReal){		//leaf
-			
-			//******************************************DO***************************************
-			strg += ((LiteralReal)n).getValue();	//get literal real
-			
-			//****************************************RETURN*************************************
-			return;
-		}			
-		
+		}
 	}
+	else if(((StringExpression)n).getOperand().get(0) instanceof LiteralString){	//LITERAL STRING
+	
+		//**************************************DO & TRAVERSE********************************			
+		for(int i=0; i<((StringExpression)n).getOperand().size(); i++){
+			parse0(((ValueSpecification)((StringExpression)n).getOperand().get(i)));	//child
+		}		
+		
+		//****************************************RETURN*************************************
+		return;
+	}
+	
+} else if(n instanceof LiteralString ) {
+	
+	if (((LiteralString)n).getValue().equals("(")){ 	//left parentheses (could be remove and put into //LITERAL STRING)
+	
+		strg += "(";
+	
+		return;
+
+	}else if (((LiteralString)n).getValue().equals(")")){ 	//right parentheses (could be remove and put into //LITERAL STRING)
+	
+		strg += ")";
+	
+		return;
+	
+	}else if (((LiteralString)n).getValue().equals(",")){ 	//comma (could be remove and put into //LITERAL STRING)
+	
+		strg += ",";
+	
+		return;
+	}
+} else if(n instanceof ElementValue){	//leaf
+	
+	//******************************************DO***************************************
+	strg += ((NamedElement)((ElementValue)n).getElement()).getName();	//get operand
+	
+	//****************************************RETURN*************************************
+	return;
+	
+} else if(n instanceof LiteralReal){		//leaf
+	
+	//******************************************DO***************************************
+	strg += ((LiteralReal)n).getValue();	//get literal real
+	
+	//****************************************RETURN*************************************
+	return;
+} else if ( n instanceof LiteralInteger){
+	strg += ((LiteralInteger)n).getValue();	//get literal integer
 }
+
+}
+*/

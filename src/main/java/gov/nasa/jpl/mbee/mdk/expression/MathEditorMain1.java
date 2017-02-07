@@ -266,13 +266,13 @@ public class MathEditorMain1 {
 		
 		this.rdbtnPromelaltl= new JRadioButton("Promela-ltl");
 		this.rdbtnPromelaltl.setFont(getFont(defaultFontSize));
-		//buttonGroup.add(this.rdbtnPromelaltl);
+		buttonGroup.add(this.rdbtnPromelaltl);
 		
 		bottomLeftPanel.setLayout(new BoxLayout(bottomLeftPanel, BoxLayout.LINE_AXIS));
 		bottomLeftPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 		bottomLeftPanel.add(rdbtnPrefixExp);
 		bottomLeftPanel.add(rdbtnInfixStringExp);
-		//bottomLeftPanel.add(rdbtnPromelaltl);
+		bottomLeftPanel.add(rdbtnPromelaltl);
 		
 		//bottomRightPanel
 		//Confirm
@@ -344,6 +344,8 @@ public class MathEditorMain1 {
 				e1.printStackTrace();
 			}
 		}
+		else //if no expression set the radio button as Infix as default
+			rdbtnInfixStringExp.setSelected(true);
 		if ( _name.length() == 0) {//no expression more likely NEW costraint
 			setNameFileldEditable(true);
 			setButtonName(MathEditorMain1.nameButton.SAVE.buttonName());
@@ -466,8 +468,22 @@ public class MathEditorMain1 {
 					if(e.getClickCount()==2){
 						int position = textExpression.getCaretPosition();
 						String currentText = textExpression.getText();
-						textExpression.setText( currentText.substring(0, position)+ list.getSelectedValue() + currentText.substring(position));
-						textExpression.setCaretPosition(position+ list.getSelectedValue().length());
+						
+						String selectedValue = list.getSelectedValue();
+						if ( MDSysMLConstants.suffixParentheses1.contains(selectedValue)){
+							selectedValue = selectedValue + ("( )");
+							textExpression.setText( currentText.substring(0, position)+ selectedValue + currentText.substring(position));
+							textExpression.setCaretPosition(position+ selectedValue.length()-1); //put caret inside ()
+						}
+						else if (MDSysMLConstants.suffixParentheses2.contains(selectedValue)){
+							selectedValue = selectedValue + ("( )( )");
+							textExpression.setText( currentText.substring(0, position)+ selectedValue + currentText.substring(position));
+							textExpression.setCaretPosition(position+ selectedValue.length()-1); //put caret inside ()
+						}
+						else {
+							textExpression.setText( currentText.substring(0, position)+ selectedValue + currentText.substring(position));
+							textExpression.setCaretPosition(position+ selectedValue.length());
+						}
 						textExpression.getCaret().setVisible(true);
 						textExpression.requestFocus();
 						list.clearSelection();

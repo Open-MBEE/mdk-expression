@@ -8,6 +8,8 @@ import com.nomagic.magicdraw.core.Application;
 import com.nomagic.uml2.ext.jmi.helpers.StereotypesHelper;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Element;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ElementValue;
+import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Expression;
+import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralInteger;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralReal;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralString;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
@@ -36,30 +38,50 @@ public abstract class Tree2UMLExpression {
 	}
 	//Util functions
 	
-	private ElementValue createElementValue(Element _lookingFor, String _lookingForName, Element _block){
+	private ElementValue createElementValue(Element _lookingFor, String _lookingForName, Element _block, boolean _showError){
 		ElementValue elemVal = Application.getInstance().getProject().getElementsFactory().createElementValueInstance();
 		if ( _lookingFor != null ){
 			elemVal.setElement(_lookingFor);
 			return elemVal;
 		}
 		else {
-			showNotAbleToFindError(_lookingForName, _block);
+			if ( _showError)
+				showNotAbleToFindError(_lookingForName, _block);
 			return null;
 		}
 	}
-	
-	protected ElementValue createElementValueFromOperation(String _lookingForOperation, Element _block){
-		return createElementValue(controller.getCombinedOperation(_lookingForOperation), _lookingForOperation, _block);
+	protected Expression getExpression() {
+		Expression exp;// = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+		if ( isRoot){
+			exp = (Expression) originalvs;
+			isRoot = false;
+		}
+		else
+			exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
+		return exp;
 	}
 	
+	
+	protected ElementValue createElementValueFromOperation(String _lookingForOperation, Element _block, boolean _showError){
+		return createElementValue(controller.getCombinedOperation(_lookingForOperation), _lookingForOperation, _block, _showError);
+	}
+	protected ElementValue createElementValueFromOperation(String _lookingForOperation, Element _block){
+		return createElementValue(controller.getCombinedOperation(_lookingForOperation), _lookingForOperation, _block, false);
+	}
+	protected ElementValue createElementValueFromOperands(String _lookingForOperations, Element _block, boolean _showError){
+		return createElementValue(controller.getOperand(_lookingForOperations), _lookingForOperations, _block, _showError);
+	}
 	protected ElementValue createElementValueFromOperands(String _lookingForOperations, Element _block){
-		return createElementValue(controller.getOperand(_lookingForOperations), _lookingForOperations, _block);
+		return createElementValue(controller.getOperand(_lookingForOperations), _lookingForOperations, _block, false);
 	}
 	public boolean getError(){
 		return this.error;
 	}
 	protected LiteralReal createLiteralReal(){
 		return Application.getInstance().getProject().getElementsFactory().createLiteralRealInstance();
+	}
+	protected LiteralInteger createLiteralInteger(){
+		return Application.getInstance().getProject().getElementsFactory().createLiteralIntegerInstance();
 	}
 	protected LiteralString createLiteralString(){
 		return Application.getInstance().getProject().getElementsFactory().createLiteralStringInstance();

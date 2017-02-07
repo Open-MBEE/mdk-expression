@@ -94,7 +94,7 @@ public class MathEditorMain1Model {
 		//*******************************SHOULD EDIT?****************************************
 		Element firstElement = this.currentConstraint.getOwnedElement().iterator().next();
 		
-		if ( firstElement instanceof Expression && ((Expression) firstElement).getOperand().size()!= 0 ) {
+		if ( firstElement instanceof Expression && ((Expression) firstElement).getOperand().size()!= 0 ) { //StringExpression is sub of Expression
 
 			UML2String uml2string;
 			if ( firstElement instanceof StringExpression ){ //1st operand is StringExpression
@@ -119,7 +119,7 @@ public class MathEditorMain1Model {
 	public String getEditExpression() {
 		return this.editExpression;
 	}
-	public boolean isStringExpression(){ //for selecting "prefix Exp" or "infix String Exp" bullet 
+	public boolean isStringExpression(){ //for selecting "prefix Exp" or "infix String Exp" radio button 
 		return this.isStringExpression;
 	}
 	public String getName(){

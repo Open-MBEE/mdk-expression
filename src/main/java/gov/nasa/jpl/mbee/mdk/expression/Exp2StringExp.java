@@ -4,6 +4,7 @@ import com.nomagic.magicdraw.core.Application;
 import com.nomagic.uml2.ext.magicdraw.auxiliaryconstructs.mdtemplates.StringExpression;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ElementValue;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Expression;
+import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralInteger;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralReal;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralString;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
@@ -50,7 +51,10 @@ public class Exp2StringExp {
 			LiteralReal litReal = Application.getInstance().getProject().getElementsFactory().createLiteralRealInstance();
 			litReal.setValue(((LiteralReal) n).getValue());
 			return litReal;
-			
+		} else if ( n instanceof LiteralInteger){
+			LiteralInteger litInt = Application.getInstance().getProject().getElementsFactory().createLiteralIntegerInstance();
+			litInt.setValue(((LiteralInteger)n).getValue());
+			return litInt;
 		}else{
 			
 			javax.swing.JOptionPane.showMessageDialog(null, "Error during transformation from Expression to StringExpression!");
