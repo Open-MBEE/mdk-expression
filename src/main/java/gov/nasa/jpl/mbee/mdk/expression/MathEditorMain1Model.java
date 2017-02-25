@@ -96,19 +96,25 @@ public class MathEditorMain1Model {
 		
 		if ( firstElement instanceof Expression && ((Expression) firstElement).getOperand().size()!= 0 ) { //StringExpression is sub of Expression
 
-			UML2String uml2string;
-			if ( firstElement instanceof StringExpression ){ //1st operand is StringExpression
-				this.isStringExpression = true; //InfixStringExp
-				uml2string = new UMLStringExpression2String(((ValueSpecification) firstElement)); 
-				this.editExpression = uml2string.parse();
-				
-			}
-			else { //1st operand is ElementValue
-				this.isStringExpression = false; //prefixExp
-				if (((Expression) firstElement).getOperand().get(0) instanceof ElementValue ){	//true if constraint is not empty
-					uml2string = new UMLExpression2String(((ValueSpecification) firstElement), customFunctionsString);	
+			try{
+				UML2String uml2string;
+				if ( firstElement instanceof StringExpression ){ //1st operand is StringExpression
+					this.isStringExpression = true; //InfixStringExp
+					uml2string = new UMLStringExpression2String(((ValueSpecification) firstElement)); 
 					this.editExpression = uml2string.parse();
+					
 				}
+				else { //1st operand is ElementValue
+					this.isStringExpression = false; //prefixExp
+					if (((Expression) firstElement).getOperand().get(0) instanceof ElementValue ){	//true if constraint is not empty
+						uml2string = new UMLExpression2String(((ValueSpecification) firstElement), customFunctionsString);	
+						this.editExpression = uml2string.parse();
+					}
+				}
+			}
+			catch (Exception e){
+				javax.swing.JOptionPane.showMessageDialog(null, "Not able to convert to a expression.");
+				this.editExpression = "";
 			}
 		}
 		else {
