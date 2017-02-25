@@ -40,6 +40,10 @@ public class SelectedConstraintBlock {
 		return ((StructuredClassifier)constraintBlock).getPart();
 	}
 	public Property getOperand(String _lookingfor){ //Property.get() throws NoSuchElementException if not found
+	/*	getOperands().stream().forEach(e->{
+			System.out.println(((NamedElement)e).getName());
+		});*/
+		
 		Optional<Property> p =  getOperands().stream()
 				//.filter(e-> ((Element)e).getHumanName().substring(DiagramContextMenuConfigurator.CONSTRAINT_PARAMETER_.length()).equals(_lookingfor))
 				.filter(e ->  ((NamedElement)e).getName().equals(_lookingfor))
