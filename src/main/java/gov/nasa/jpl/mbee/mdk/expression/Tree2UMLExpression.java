@@ -33,7 +33,7 @@ public abstract class Tree2UMLExpression {
 		isRoot = false;
 	}
 	
-	public ValueSpecification parse(){
+	public ValueSpecification parse() throws Exception{
 		return traverse0(root);		
 	}
 	//Util functions
@@ -147,5 +147,6 @@ public abstract class Tree2UMLExpression {
 		return null;
 	}
 	*/
-	protected abstract ValueSpecification traverse0(ParseTree n);
+	protected abstract ValueSpecification traverse0(ParseTree n) throws Exception;
+	
 }
