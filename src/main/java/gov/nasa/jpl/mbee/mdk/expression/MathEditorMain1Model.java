@@ -84,6 +84,7 @@ public class MathEditorMain1Model {
 	public Element getCombinedOperation(String _lookingfor){
 		return this.combinedOperationsMap.get(_lookingfor);
 	}
+	//set constraint name if different
 	public void setCurrentConstraintName(String _name){
 		if ( this.currentConstraint.getName().compareTo(_name) != 0)
 			this.currentConstraint.setName(_name);
