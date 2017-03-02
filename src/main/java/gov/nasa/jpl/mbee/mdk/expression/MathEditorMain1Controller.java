@@ -32,7 +32,7 @@ import net.sourceforge.jeuclid.converter.Converter;
 
 public class MathEditorMain1Controller implements ActionListener {
 	
-	private static boolean DEBUG = true;
+	private static boolean DEBUG = false;
 	private MathEditorMain1Model model;
 	private MathEditorMain1Controller controller;
 	private MathEditorMain1  view;
