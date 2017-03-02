@@ -97,17 +97,19 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 		String s = "";
 		String t;
 		int i = -1;
+		Node previous_node = null;
 		while ((t = n.getNodeName()).equals("mi") || t.equals("mn")){
-			s+= n.getFirstChild().getNodeValue();
+			s+= this.toStringFromUnicodeMI(n.getFirstChild().getNodeValue());
 			i++;
 			if (!searchSibiling)
 			  break;
+			previous_node = n;
 			n = n.getNextSibling();
 			if (n == null)
 				break;
 		}
 		if ( s.length() == 1 && ( s.equals("f")|| s.equals("g")) ) {
-			if (isNextSiblingMRowEnclosedbyBrackets(n)){ //are <mi> tagged
+			if (isNextSiblingMRowEnclosedbyBrackets(n)){ //are <mi> tagged like f(x) or g(x+y)...
 				ElementValue ev = createElementValueFromOperation(s, AddContextMenuButton.asciiMathLibraryBlock);
 				if ( ev == null)
 					throw new Exception ("\"" + s + "\" should be defined in AsciiMathLibraryBlock.  Define it and please retry.");
@@ -115,24 +117,57 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 			}
 			//else means is "f" or "g" a constraint parameter
 		}
-		else 
-			s = this.toStringFromUnicodeMI(s);
 		
+		ElementValue ev;
+		//xy_123 <mi>x <msub><mi>y<mn>123....
+		Node msub;
+		if(previous_node != null && (msub = previous_node.getNextSibling()) != null && msub.getNodeName().equals("msub")){
+			//assume msub always has two childrens.
+			Node firstChild = msub.getFirstChild();
+			Node secondChild = firstChild.getNextSibling();
+			if ( (firstChild.getNodeName().equals("mi")|| firstChild.getNodeName().equals("mn"))
+					&&
+					(secondChild.getNodeName().equals("mi")|| secondChild.getNodeName().equals("mn"))){
+				s+=toStringFromUnicodeMI(firstChild.getFirstChild().getNodeValue()) + "_" + toStringFromUnicodeMI(secondChild.getFirstChild().getNodeValue());
+				ev = createElementValueFromOperands(s, controller.getConstraintBlock());
+				if ( ev != null)
+					return new Vs(ev, i+1); //n itself and n's sibling msub(and childrens)
+			}
+		}
+		//msub was not mimn's sibling or not valid msub to be a constraint parameter.
 		
 		//search from constraintblock
-		ElementValue ev = createElementValueFromOperands(s, controller.getConstraintBlock());
+		ev = createElementValueFromOperands(s, controller.getConstraintBlock());
 		if ( ev == null) {//may be customFunction
 			ev = createElementValueFromOperation(s, AddContextMenuButton.customFuncBlock);
 			if (ev == null){
-				//if ( s.indexOf('f')!= -1 || s.indexOf('g') !=-1) Not necessary because of docPreprocess
-					//return null;
-				//else
-					throw new Exception ("\"" + s + "\" is not a constraint parameter nor custom function.");
+				throw new Exception ("\"" + s + "\" is not a constraint parameter nor custom function.");
 			}
 			return new Vs(ev, i); //custom function
 		}
 		else
 			return new Vs(ev, i); //is constraint parameter
+	}
+	private Vs isSubscriptedConstraintParameter(Node n, String s) throws Exception
+	{
+		int i = -1;
+		if( n.getNodeName().equals("mi")){
+			s+= n.getFirstChild().getNodeValue();
+			i++;
+		}
+		Node sibiling = n.getNextSibling();
+		if ( sibiling.getNodeName().equals("mn")){
+			s = this.toStringFromUnicodeMI(s);
+			s+="_";
+			s+= sibiling.getFirstChild().getNodeValue();
+		}
+		else
+			return null; //it is easier to handle by returning null if it is not subscripted constraint parameter.
+		//search from constraintblock
+		ElementValue ev = createElementValueFromOperands(s, controller.getConstraintBlock());
+		if ( ev == null) 
+			throw new Exception ("\"" + s + "\" is not a constraint parameter.");
+		return new Vs(ev, i); //is constraint parameter
 	}
 	
 	private boolean isConstraintParameter(Node n, int allchildrensNumber){ //starts with mi and sibiling must be all mi and mn
@@ -192,7 +227,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 			 */
 		//todo other case like mfrac????
 		else if ( childNodes.size() == 1 && childNodes.get(0).hasChildNodes() && childNodes.get(0).getFirstChild().getNodeType() != Node.TEXT_NODE 
-				&& !childNodes.get(0).getNodeName().equals("mfrac") && !childNodes.get(0).getNodeName().equals("msqrt") && !childNodes.get(0).getNodeName().equals("mroot")) {
+				&& !childNodes.get(0).getNodeName().equals("msub") && !childNodes.get(0).getNodeName().equals("mfrac") && !childNodes.get(0).getNodeName().equals("msqrt") && !childNodes.get(0).getNodeName().equals("mroot")) {
 			return false;
 		}
 			//else if if 2 childNodes of number like -100 +10, then () may not needed  
@@ -223,7 +258,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 		
 		String temp;
 		boolean tempb;
-		Vs tempVs;
+		Vs tempVs = null;
 			if ( n.getNodeName().equals("mn")) //number
 				return new Vs(getNumber(n, ""), 0); //nextIndex = i+1 automatically
 			else if(searchSibiling && (tempVs = getPositiveOrNegativeNumber(n)) != null){ //number prefix by + or -
@@ -235,6 +270,11 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				if ( b != null) //it was bracket or comma
 					return new Vs(b, 0);
 				else {
+					/*if ( temp.equals("\u2217"))
+						System.out.println("**");
+					if (temp.equals("\u22C6"))
+						System.out.println("***");
+			    	*/
 					
 					//\u2192 can be vec, ->, or rarr.  for vec's case its parent is mover.  rarr is return as "->" because no way to distinguish(?)
 					if ( temp.equals("\u2192")){
@@ -270,13 +310,11 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 					expNew.getOperand().add(createBracket("("));
 				for ( int i = 0; i < nl.size(); i++){
 					tempVs = processNode(nl.get(i), true);// searchSibiling);
-					if ( tempVs == null){
+					if ( tempVs == null){ //TODO this may not necessary  - this was to handle special case like <mrow><mi>f<mi>u</mrow><mi>n where fun is customized function "f" caused problem - but this is not nesessay because of DocPreprocess added now.
 						if ( nl.get(i).getNodeName().equals("mi")){
 							Object[] sibilingsS =  getMiMnsInSibilings(nl.get(i));
 							String possible = nl.get(i).getFirstChild().getNodeValue() + sibilingsS[0];
-							System.out.println(possible);
 							if ( ((int)sibilingsS[1] + 1)== nl.size()){ //all children's mrow can be a variable.
-								System.out.println("Yes");
 								Object[] mimnParentSibilings = getMiMnsInSibilings(n); //n = mrow
 								if ( ((String)mimnParentSibilings[0]).length() > 0){
 									possible = possible + mimnParentSibilings[0];
@@ -303,7 +341,16 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				}
 				
 				if (nl.get(nl.size()-1).getNodeName().equals("mi")) {
-					Object[] mimnsibilings = getMiMnsInSibilings(n); //tanabc123a where abc123a is a constraint parameter then a is in mrow's last mi, bc123a are in next <mi>b<mi>c<mn>123<mi>a so this postfix has bc123a
+				    /*<mrow> tan abc123a wher abc123a is a constraint parameter
+				      <mo>tan</mo>
+				      <mi>a</mi>
+				    </mrow>
+				    <mi>b</mi>
+				    <mi>c</mi>
+				    <mn>123</mn>
+				    <mi>a</mi>
+					*/
+					Object[] mimnsibilings = getMiMnsInSibilings(n); //tanabc123a where abc123a is a constraint parameter then first a is in mrow's last mi, bc123a are in next <mi>b<mi>c<mn>123<mi>a so this postfix has bc123a
 					if ( ((String)mimnsibilings[0]).length() > 0 ){
 						String possibleconstraintvariable = (String)getMiMnsMyselfAndPreviousSibilings(nl.get(nl.size()-1))[0] + (String)mimnsibilings[0];
 						ElementValue ev = createElementValueFromOperands(possibleconstraintvariable, controller.getConstraintBlock());
@@ -358,14 +405,43 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				return new Vs(expNew, 0);
 			}
 			//both are mover/munder but hat case requires flipping 2 childrens and lim case is not 
-			/*<mover>  
-		      <mrow>
-		        <mi>a</mi>
-		        <mi>b</mi>
-		      </mrow>
-		      <mo>^</mo>
-		    </mover>
-		    
+			
+			/*
+			hat(ab) bar(xy) ulA vec v dotx ddoty"	
+				<math>
+			    <mover>
+			      <mrow>
+			        <mi>a</mi>
+			        <mi>b</mi>
+			      </mrow>
+			      <mo>^</mo>
+			    </mover>
+			    <mover>
+			      <mrow>
+			        <mi>x</mi>
+			        <mi>y</mi>
+			      </mrow>
+			      <mo>¯</mo>
+			    </mover>
+			    <munder>
+			      <mi>A</mi>
+			      <mo>?</mo>
+			    </munder>
+			    <mover>
+			      <mi>v</mi>
+			      <mo>?</mo>
+			    </mover>
+			    <mover>
+			      <mi>x</mi>
+			      <mo>.</mo>
+			    </mover>
+			    <mover>
+			      <mi>y</mi>
+			      <mo>..</mo>
+			    </mover>
+			  </math>
+
+		    lim(h->0)
 		    <munder>
 		      <mo>lim</mo>
 		      <mrow>
@@ -375,7 +451,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 		      </mrow>
 		    </munder>
 			*/
-			else if ( Doc2InfixStringUtil.COMMAND_W_ARGS.get(n.getNodeName()) == Doc2InfixStringUtil.TType.MOVERORMUNDER) {//
+			else if ( Doc2InfixStringUtil.COMMAND_W_ARGS.get(n.getNodeName()) == Doc2InfixStringUtil.TType.MOVERORMUNDER) {//mover or munder
 				Expression expNew = getExpression();
 				List<Node> nl = Doc2InfixStringUtil.getChildElementNodes(n); 
 				if(nl.size() != 2) { //2 children arguments 
@@ -407,9 +483,43 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				}
 				return new Vs(expNew, 0);
 			}
-			else if ( Doc2InfixStringUtil.COMMAND_W_ARGS.get(n.getNodeName()) == Doc2InfixStringUtil.TType.INFIX) { //mfrac, msub msup
+			//msub can be a constraint paremter like x_1
+			else if (n.getNodeName().equals("msub")) { //msub
 				Expression expNew = getExpression();
 
+				List<Node> nl = Doc2InfixStringUtil.getChildElementNodes(n); 
+				if(nl.size() != 2) { //2 children arguments 
+					throw new Exception ("Not supported - problem in " + n + ". The function should have two arguments.");
+				}
+				//x_12(constraint parameter)
+				if (nl.get(0).getNodeName().equals("mi") ) {//may like be x_1
+					if ( nl.get(1).getNodeName().equals("mn") || nl.get(1).getNodeName().equals("mi")){ //x_1 or a_i
+						String s= toStringFromUnicodeMI(nl.get(0).getFirstChild().getNodeValue()) + "_" + toStringFromUnicodeMI(nl.get(1).getFirstChild().getNodeValue());
+						ElementValue ev = createElementValueFromOperands(s, controller.getConstraintBlock());
+						if ( ev != null)
+							return new Vs(ev, 0);
+					}
+					//msub with 1st child mi must be a constraint parameter (ie., x_1)
+					throw new Exception (nl.get(0).getFirstChild().getNodeValue() + "_" + nl.get(1).getFirstChild().getNodeValue() + " is not a constraint parameter.");
+				}
+				// not a constraint parameter like x_1 or a_i
+				tempVs = processNode(nl.get(0), false);
+				if ( tempVs == null)
+					throw new Exception ("Not supported - problem in " + nl.get(0).getNodeName());
+				expNew.getOperand().add(tempVs.value);
+
+				//adding "^" or "-" to expNew (ab to a^b or a_b)
+				if ( tempVs.offset == 0) {
+					expNew.getOperand().add(createElementValueFromOperation(Doc2InfixStringUtil.FN.get(n.getNodeName()), AddContextMenuButton.asciiMathLibraryBlock)); //_ 
+					tempVs = processNode(nl.get(1), false);
+					if ( tempVs == null)
+						throw new Exception ("Not supported - problem in " + nl.get(1).getNodeName());
+					expNew.getOperand().add(tempVs.value);
+				}
+				return new Vs(expNew, 0);
+			}
+			else if ( Doc2InfixStringUtil.COMMAND_W_ARGS.get(n.getNodeName()) == Doc2InfixStringUtil.TType.INFIX) { //mfrac msup
+				Expression expNew = getExpression();
 				List<Node> nl = Doc2InfixStringUtil.getChildElementNodes(n); 
 				if(nl.size() != 2) { //2 children arguments 
 					throw new Exception ("Not supported - problem in " + n + ". The function should have two arguments.");
@@ -418,6 +528,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				if ( tempVs == null)
 					throw new Exception ("Not supported - problem in " + nl.get(0).getNodeName());
 				expNew.getOperand().add(tempVs.value);
+
 				//adding "^" or "-" to expNew (ab to a^b or a_b)
 				expNew.getOperand().add(createElementValueFromOperation(Doc2InfixStringUtil.FN.get(n.getNodeName()), AddContextMenuButton.asciiMathLibraryBlock)); //adding ^ or _ or /
 				tempVs = processNode(nl.get(1), false);
@@ -426,7 +537,6 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				expNew.getOperand().add(tempVs.value);
 				return new Vs(expNew, 0);
 			}
-
 			
 			else if (n.getNodeName().equals("msubsup") || n.getNodeName().equals("munderover")){
 				Expression expNew = getExpression();
@@ -434,15 +544,25 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				if(nl.size() != 3) { //3 children arguments 
 					throw new Exception ("Not supported - problem in " + n.getNodeName() + ". The function should have three arguments.");
 				}
-				//adding "_" or "^" to expNew  (abc to a_b^c)
-				for ( int i = 0; i < 3; i++){
+				
+				//adding "_" or "^" to expNew  (abc to a_b^c)				
+				//i = 0
+				if (nl.get(0).getNodeName().equals("mi")) {//may like be x_1
+					tempVs = processNode(nl.get(0), true);
+				}
+				else
+					tempVs = processNode(nl.get(0), false);
+				if ( tempVs == null)
+					throw new Exception ("Not supported - problem in " + nl.get(0).getNodeName());
+				expNew.getOperand().add(tempVs.value);
+				expNew = createAndAddElementValueToExpression_asciiMathLibraryBlock(expNew, "_");//"^ or "_"
+				//i = 1 to 2
+				for ( int i = 1; i < 3; i++){
 					tempVs = processNode(nl.get(i), false);
 					if ( tempVs == null)
 						throw new Exception ("Not supported - problem in " + nl.get(i).getNodeName());
 					expNew.getOperand().add(tempVs.value);
-					if ( i == 0)
-						expNew = createAndAddElementValueToExpression_asciiMathLibraryBlock(expNew, "_");//"^ or "_"
-					else if ( i == 1)
+					if ( i == 1)
 						expNew = createAndAddElementValueToExpression_asciiMathLibraryBlock(expNew, "^");//"^ or "_"
 				}
 				return new Vs(expNew, 0);
