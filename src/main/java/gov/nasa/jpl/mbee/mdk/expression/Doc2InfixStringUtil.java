@@ -195,7 +195,7 @@ public class Doc2InfixStringUtil {
 		    	put("\u22C5","*");
 		    	put("\u2217","**");
 		    	put("\u22C6","***");
-		    	put("/","//");
+		    	// put("/","//");
 		    	put("\\","\\\\");
 		    	put("\\","setminus");
 		    	put("\u00D7","xx");
@@ -333,6 +333,8 @@ public class Doc2InfixStringUtil {
 				//put("\u23DF", "ubrace");//////////////asciimath parser does not recognize "ubrace"
 				
 				
+				//Added by mw
+				put("\u2223", "|"); //| in windows is considered as \u2223 in asciimathparser <mo>|</mo>  between mo is \u2223 not "|"
 		    	
 }};
 	public static List<Node> getChildElementNodes(Node n)
@@ -347,5 +349,36 @@ public class Doc2InfixStringUtil {
 		           }
 		    }
 		    return elementNodes;
+	}
+	static boolean skipNL;
+	public static String printXML(Node rootNode) {
+		String tab = "";
+		skipNL = false;
+		return(printXML(rootNode, tab));
+	}
+	public static String printXML(Node rootNode, String tab) {
+		String print = "";
+		if(rootNode.getNodeType()==Node.ELEMENT_NODE) {
+			print += "\n"+tab+"<"+rootNode.getNodeName()+">";
+		}
+		NodeList nl = rootNode.getChildNodes();
+		if(nl.getLength()>0) {
+			for (int i = 0; i < nl.getLength(); i++) {
+				print += printXML(nl.item(i), tab+"  ");    // \t
+			}
+		} else {
+			if(rootNode.getNodeValue()!=null) {
+				print = rootNode.getNodeValue();
+			}
+			skipNL = true;
+		}
+		if(rootNode.getNodeType()==Node.ELEMENT_NODE) {
+			if(!skipNL) {
+				print += "\n"+tab;
+			}
+			skipNL = false;
+			print += "</"+rootNode.getNodeName()+">";
+		}
+		return(print);
 	}
 }

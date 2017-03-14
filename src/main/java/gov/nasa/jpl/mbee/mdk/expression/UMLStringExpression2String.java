@@ -4,12 +4,10 @@ import java.util.List;
 
 import com.nomagic.uml2.ext.magicdraw.auxiliaryconstructs.mdtemplates.StringExpression;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ElementValue;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Expression;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralInteger;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralReal;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralString;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.NamedElement;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Property;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
 
 public class UMLStringExpression2String extends UML2String {
@@ -40,7 +38,13 @@ public class UMLStringExpression2String extends UML2String {
 				parse0(ops.get(i));
 			}*/
 		} else if(n instanceof ElementValue){	//leaf
-			strg += ((NamedElement)((ElementValue)n).getElement()).getName();	//get operand
+			String ev = ((NamedElement)((ElementValue)n).getElement()).getName();
+			ev = ev.replace("|", "\u2223"); //having | character having problem with creating xml
+			
+			strg += ev;	//get operand
+			//String zz = Doc2InfixString.unescapeJava(((NamedElement)((ElementValue)n).getElement()).getName());
+			//System.out.println(zz);
+			
 			return;
 		
 		} else if(n instanceof LiteralString ) { //"(" is LiteralString

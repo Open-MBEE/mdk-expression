@@ -1,5 +1,7 @@
 package gov.nasa.jpl.mbee.mdk.expression;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -253,7 +255,18 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 			return true;
 	}
 
-	
+	public static String unescapeJava(String in) {
+	    StringBuilder b = new StringBuilder();
+
+	    for (char c : in.toCharArray()) {
+	        if (c >= 128)
+	            b.append("\\u").append(String.format("%04X", (int) c));
+	        else
+	            b.append(c);
+	    }
+
+	    return b.toString();
+	}
 	private Vs processNode(Node n, boolean searchSibiling) throws Exception{
 		
 		String temp;
@@ -283,9 +296,13 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 						else
 							temp = "->"; // rarr and -> both save uml as "->"
 					}
-					else
-						temp = toStringFromUnicodeMO(temp);
+					else {
+						String text = unescapeJava(temp);
+						System.out.println(text);
 					
+						temp = toStringFromUnicodeMO(temp);
+					}
+				
 					ElementValue ev = createElementValueFromOperation(temp, AddContextMenuButton.asciiMathLibraryBlock);
 					if (ev == null){
 						String cp = toStringFromUnicodeMI(temp);
@@ -520,20 +537,91 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 			}
 			else if ( Doc2InfixStringUtil.COMMAND_W_ARGS.get(n.getNodeName()) == Doc2InfixStringUtil.TType.INFIX) { //mfrac msup
 				Expression expNew = getExpression();
-				List<Node> nl = Doc2InfixStringUtil.getChildElementNodes(n); 
-				if(nl.size() != 2) { //2 children arguments 
+				List<Node> nchilds = Doc2InfixStringUtil.getChildElementNodes(n); 
+				if(nchilds.size() != 2) { //2 children arguments 
 					throw new Exception ("Not supported - problem in " + n + ". The function should have two arguments.");
 				}
-				tempVs = processNode(nl.get(0), false);
+				tempVs = processNode(nchilds.get(0), false);
 				if ( tempVs == null)
-					throw new Exception ("Not supported - problem in " + nl.get(0).getNodeName());
+					throw new Exception ("Not supported - problem in " + nchilds.get(0).getNodeName());
+				
+				
+				//handle for d/dx d/dy... dy/dx where y is constraint parameter and d/dx is operator
+				if ( n.getNodeName().equals("mfrac")){
+						boolean possibleOperator = true;
+						temp = null;
+						if( nchilds.get(0).getNodeName().equals("mi") &&  nchilds.get(1).getNodeName().equals("mrow")){
+							temp = nchilds.get(0).getFirstChild().getNodeValue(); //d
+							if (temp.equals("d")){
+								temp += Doc2InfixStringUtil.FN.get(n.getNodeName()); // /
+								List<Node> mrowchilds = Doc2InfixStringUtil.getChildElementNodes(nchilds.get(1));
+								if ( mrowchilds.get(0).getNodeName().equals("mi") && mrowchilds.get(0).getFirstChild().getNodeValue().equals("d")){
+									temp+="d";
+									if ( mrowchilds.get(1).getNodeName().equals("mi"))
+										temp+= mrowchilds.get(1).getFirstChild().getNodeValue();
+									else
+										possibleOperator = false;
+								}
+								else 
+									possibleOperator = false;
+								
+								if ( possibleOperator == true && temp != null){
+									ElementValue ev = createElementValueFromOperation(temp, AddContextMenuButton.asciiMathLibraryBlock); //ie., d/dx
+									if ( ev != null){
+										expNew.getOperand().add(ev);
+										return new Vs(expNew, 0);
+									}
+								}
+							}
+							
+						}
+						else if ( nchilds.get(0).getNodeName().equals("mrow") && nchilds.get(1).getNodeName().equals("mrow")){
+							List<Node> firstmrowchilds = Doc2InfixStringUtil.getChildElementNodes(nchilds.get(0));
+							if ( firstmrowchilds.get(0).getNodeName().equals("mi") && firstmrowchilds.get(0).getFirstChild().getNodeValue().equals("d")){
+								String constraintparameter = "";
+								temp = "d";
+								temp += Doc2InfixStringUtil.FN.get(n.getNodeName()); // /
+								for ( int j = 1; j < firstmrowchilds.size(); j++){
+									if ( firstmrowchilds.get(j).getNodeName().equals("mi"))
+										constraintparameter+=firstmrowchilds.get(j).getFirstChild().getNodeValue();
+									else {
+										possibleOperator = false;
+										break;
+									}
+								} //end for forloop
+								List<Node> secondmrowchilds = Doc2InfixStringUtil.getChildElementNodes(nchilds.get(1));
+								if ( secondmrowchilds.get(0).getNodeName().equals("mi") && secondmrowchilds.get(0).getFirstChild().getNodeValue().equals("d")){
+									temp+="d";
+									if ( secondmrowchilds.get(1).getNodeName().equals("mi"))
+										temp+= secondmrowchilds.get(1).getFirstChild().getNodeValue();
+									else
+										possibleOperator = false;
+								}
+								else 
+									possibleOperator = false;
+								
+								if ( possibleOperator == true && temp != null){
+									ElementValue ev = createElementValueFromOperation(temp, AddContextMenuButton.asciiMathLibraryBlock); //ie., d/dx
+									if ( ev != null){
+										expNew.getOperand().add(ev);
+										ElementValue cpev = createElementValueFromOperands(constraintparameter, controller.getConstraintBlock());
+										if ( cpev != null){
+											expNew.getOperand().add(cpev);
+											return new Vs(expNew, 0);
+										}
+									}
+								}
+							}
+						}
+				}
+				
 				expNew.getOperand().add(tempVs.value);
 
 				//adding "^" or "-" to expNew (ab to a^b or a_b)
 				expNew.getOperand().add(createElementValueFromOperation(Doc2InfixStringUtil.FN.get(n.getNodeName()), AddContextMenuButton.asciiMathLibraryBlock)); //adding ^ or _ or /
-				tempVs = processNode(nl.get(1), false);
+				tempVs = processNode(nchilds.get(1), false);
 				if ( tempVs == null)
-					throw new Exception ("Not supported - problem in " + nl.get(1).getNodeName());
+					throw new Exception ("Not supported - problem in " + nchilds.get(1).getNodeName());
 				expNew.getOperand().add(tempVs.value);
 				return new Vs(expNew, 0);
 			}

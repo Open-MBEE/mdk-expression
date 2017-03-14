@@ -22,7 +22,6 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Element;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Property;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
 
-import antlr.gov.nasa.jpl.mbee.mdk.expression.AsciiMathML2TreeTestxx.XX;
 import net.sourceforge.jeuclid.LayoutContext;
 import net.sourceforge.jeuclid.context.LayoutContextImpl;
 import net.sourceforge.jeuclid.context.Parameter;
@@ -32,7 +31,7 @@ import net.sourceforge.jeuclid.converter.Converter;
 
 public class MathEditorMain1Controller implements ActionListener {
 	
-	private static boolean DEBUG = false;
+	private static boolean DEBUG = true;
 	private MathEditorMain1Model model;
 	private MathEditorMain1Controller controller;
 	private MathEditorMain1  view;
@@ -153,15 +152,27 @@ public class MathEditorMain1Controller implements ActionListener {
 			    	//opt.setAddSourceAnnotation(true);
 	
 					AsciiMathParser amp = new AsciiMathParser();
+					textExpression = textExpression.replace("|", "\u2223"); //having | character having problem with creating xml
+					/*
+					try {
+					    String myString = "\u0048\u0065\u006C\u006C\u006F World";
+					    byte[] utf8Bytes = myString.getBytes("UTF8");
+					    String text = new String(utf8Bytes,"UTF8");
+					}
+					catch (UnsupportedEncodingException e) {
+					    e.printStackTrace();
+					}
+					*/
+					
 					Document docExp = amp.parseAsciiMath(textExpression/*, opt*/);
 					
-					if ( DEBUG ) {String x = XX.printXML(docExp);	
-								  System.out.println(x);}
+					if ( DEBUG ) {String x = Doc2InfixStringUtil.printXML(docExp);
+						System.out.println(x);}
 					
 					DocPreprocess p = new DocPreprocess(docExp);
 					docExp = p.process();
-					if ( DEBUG ) {String x = XX.printXML(docExp);	
-					  System.out.println(x);}
+					if ( DEBUG ) {String x = Doc2InfixStringUtil.printXML(docExp);
+					  	System.out.println(x);}
 	
 					
 					Doc2InfixString gg = new Doc2InfixString(controller, docExp);
@@ -170,7 +181,19 @@ public class MathEditorMain1Controller implements ActionListener {
 						Exp2StringExp transE2SE = new Exp2StringExp(vs);
 						ValueSpecification vsNew = transE2SE.transform();
 						vsNew.setOwner(this.model.currentConstraint);
-						render(docExp, false);
+						
+						
+						UMLStringExpression2String uml2string = new UMLStringExpression2String(((ValueSpecification) vsNew));	
+						String newTextExpression = uml2string.parse();
+						newTextExpression = newTextExpression.replace("|", "\u2223"); //having | character having problem with creating xml
+						Document newDocExp = amp.parseAsciiMath(newTextExpression);
+						
+						if ( DEBUG ) {String x = Doc2InfixStringUtil.printXML(newDocExp);
+					  	System.out.println(x);}
+	
+						
+						render(newDocExp, false);
+						//render(docExp, false);
 						
 					} catch (Exception e2) {
 						// TODO Auto-generated catch block
@@ -179,7 +202,7 @@ public class MathEditorMain1Controller implements ActionListener {
 						
 				        try 
 				        {  
-				        	docExp.getFirstChild().appendChild(createMrowMessage(docExp, "(Invalid)"));
+				        	docExp.getFirstChild().appendChild(createMrowMessage(docExp, "(Invalid!)"));
 				            render(docExp, true);
 				        } catch (Exception ee) {  
 				        	ee.printStackTrace();
@@ -187,6 +210,7 @@ public class MathEditorMain1Controller implements ActionListener {
 					}
 				}
 					//save name in case it changed
+ 
 				saveConstraintName();
 			}
 			else 

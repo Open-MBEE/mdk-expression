@@ -328,11 +328,12 @@ public class MathEditorMain1 {
 				rdbtnPrefixExp.setSelected(true);
 			}
 			
-			textExpression.setText(_editExpression);
+			//String modifiedExp = _editExpression = _editExpression.replace("\u2223", "|");
+			textExpression.setText(_editExpression.replace("\u2223", "|")); //need to have | instead of \u2223
 
 			//**************************RENDER EXPRESSION************************
 			AsciiMathParser amp = new AsciiMathParser();
-			Document docExp = amp.parseAsciiMath(textExpression.getText());
+			Document docExp = amp.parseAsciiMath(_editExpression); //need to have \u2223 instead of |
 			Converter getPic = Converter.getInstance();
 			LayoutContextImpl l = (LayoutContextImpl) LayoutContextImpl.getDefaultLayoutContext();
 			l.setParameter(Parameter.MATHSIZE, 30);
