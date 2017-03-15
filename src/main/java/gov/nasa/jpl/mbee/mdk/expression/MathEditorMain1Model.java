@@ -82,6 +82,10 @@ public class MathEditorMain1Model {
 		return customFunctionsString;
 	}
 	public Element getCombinedOperation(String _lookingfor){
+		System.out.println( _lookingfor);
+		this.combinedOperationsMap.keySet().forEach(c->{System.out.println(c);});
+		
+		
 		return this.combinedOperationsMap.get(_lookingfor);
 	}
 	//set constraint name if different
