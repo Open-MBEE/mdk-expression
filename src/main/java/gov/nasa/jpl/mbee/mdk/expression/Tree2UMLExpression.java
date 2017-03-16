@@ -109,7 +109,7 @@ public abstract class Tree2UMLExpression {
 	
 	protected static boolean askToCreateAConstraintParameter(String _name){
 		Object[] options = {"Yes", "No"};
-		int n = JOptionPane.showOptionDialog(null, "Would you like a constraint parameter \"" + _name + "\" to be created?",	"Question",
+		int n = JOptionPane.showOptionDialog(null, "Would you like a constraint parameter " + _name + " to be created?",	"Question",
 		JOptionPane.YES_NO_OPTION,
 		JOptionPane.QUESTION_MESSAGE,
 		null,     //do not use a custom Icon
