@@ -50,22 +50,27 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 
 	
 	//f(x) or g(xy) then <mi>f</mi><mrow><mo>(</mo><mi>x</mi><mo>)</mo></mrow> then f is created from asciilibrary's f
-	private boolean isNextSiblingMRowEnclosedbyBrackets(Node n) {
+	private String isNextSiblingMRowEnclosedbyBrackets(Node sibiling) {
 		try{
-			Node sibling = n.getNextSibling();
-			if ( sibling.getNodeName().equals("mrow")){
-				List<Node>scs = Doc2InfixStringUtil.getChildElementNodes(sibling);
+			if ( sibiling.getNodeName().equals("mrow")){
+				List<Node>scs = Doc2InfixStringUtil.getChildElementNodes(sibiling);
 				//at least 3 parameters "(" a parameter and ")" 
 				if ( scs.size() >= 3 && scs.get(0).getNodeName().equals("mo") && scs.get(0).getFirstChild().getNodeValue().equals("(") 
 					&& scs.get(scs.size()-1).getNodeName().equals("mo") && scs.get(scs.size()-1).getFirstChild().getNodeValue().equals(")"))
-					return true;
+					return createStringNodeValue(scs);
 			}
-			return false;
+			return null;
 		}
-		catch (Exception e) {return false;}
+		catch (Exception e) {return null;}
 	}
-	
-	
+	//constract string from nodevalues;
+	private String createStringNodeValue(List<Node>scs){
+		String s = "";
+		for(Node n: scs){
+			s+=n.getFirstChild().getNodeValue();
+		}
+		return s;
+	}
 	private Vs getPositiveOrNegativeNumber(Node n)
 	{
 		String s = "";
@@ -93,7 +98,28 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 		else
 			return null;
 	}
-	
+	private Vs createConstraintParameter(String s, int offset)  throws Exception {
+		ElementValue ev;
+		if (askToCreateAConstraintParameter(s)){
+			try {
+				System.out.println("Warn: Couldn't find " + s + " so try to create the constraint parameter...");
+				ev = createConstaintParameter(s);
+				if ( ev != null) { //success creating the constraint parameter
+					return new Vs(ev, offset); //n itself and n's sibling msub(and childrens)
+				}
+				else {
+					throw new Exception("Not able to create " +  s + " in " + controller.getConstraintBlock().getHumanName() + "!");
+				}
+			}
+			catch(Exception e1){
+				e1.printStackTrace();
+				throw new Exception("Not able to create " +  s + " in " + controller.getConstraintBlock().getHumanName() + "!");
+			}
+		}
+		else {
+			throw new Exception ("\"" + s + "\" is not a constraint parameter nor custom function.");
+		}
+	}
 	private Vs getMisMns(Node n, boolean searchSibiling) throws Exception
 	{
 		String s = "";
@@ -111,13 +137,15 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				break;
 		}
 		if ( s.length() == 1 && ( s.equals("f")|| s.equals("g")) ) {
-			if (isNextSiblingMRowEnclosedbyBrackets(n)){ //are <mi> tagged like f(x) or g(x+y)...
-				ElementValue ev = createElementValueFromOperation(s, AddContextMenuButton.asciiMathLibraryBlock);
-				if ( ev == null)
-					throw new Exception ("\"" + s + "\" should be defined in AsciiMathLibraryBlock.  Define it and please retry.");
-				return new Vs(ev, i); //f(x) or g(x) etc...
+			String bracketEnclosedString = isNextSiblingMRowEnclosedbyBrackets(n); //(n at this point is original n's sibiling) f(x) or g(x+y)... 
+			if ( bracketEnclosedString != null) {
+				ElementValue ev = createElementValueFromOperands(s + bracketEnclosedString, controller.getConstraintBlock());
+				if ( ev != null)
+					return new Vs(ev, i+1); //f(x) or g(x) etc... so next mrow with () info is already processed so offset is +1
+				else //create constraint parameter or throw exception
+					return createConstraintParameter(s + bracketEnclosedString, i+1);
 			}
-			//else means is "f" or "g" a constraint parameter
+			//else means is "f" or "g" a constraint parameter processed by following code
 		}
 		
 		ElementValue ev;
@@ -134,6 +162,8 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				ev = createElementValueFromOperands(s, controller.getConstraintBlock());
 				if ( ev != null)
 					return new Vs(ev, i+1); //n itself and n's sibling msub(and childrens)
+				else
+					return createConstraintParameter(s, i+1);
 			}
 		}
 		//msub was not mimn's sibling or not valid msub to be a constraint parameter.
@@ -142,10 +172,10 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 		ev = createElementValueFromOperands(s, controller.getConstraintBlock());
 		if ( ev == null) {//may be customFunction
 			ev = createElementValueFromOperation(s, AddContextMenuButton.customFuncBlock);
-			if (ev == null){
-				throw new Exception ("\"" + s + "\" is not a constraint parameter nor custom function.");
-			}
-			return new Vs(ev, i); //custom function
+			if (ev == null)  //not able to find a constraint parameter from the constaint block
+				return createConstraintParameter(s, i);
+			else
+				return new Vs(ev, i); //custom function
 		}
 		else
 			return new Vs(ev, i); //is constraint parameter
