@@ -5,7 +5,7 @@
         version="${human.version}"
         provider-name="NASA / Jet Propulsion Laboratory / Caltech"
         class-lookup="LocalFirst"
-        class="gov.nasa.jpl.mbee.mdk.expression.AddContextMenuButton">
+        class="gov.nasa.jpl.mbee.mdk.expression.MDKExpressionPlugin">
     <requires>
         <api version="1.0"/>
     </requires>

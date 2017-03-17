@@ -46,7 +46,7 @@ public class LibrarySelector {
 			java.util.Iterator<BaseElement> selIt = selected1.iterator();
 			while(selIt.hasNext()){
 				Element el = (Element) selIt.next();
-				AddContextMenuButton.asciiMathLibraryBlock = el;
+				MDKExpressionPlugin.asciiMathLibraryBlock = el;
 			}
 			
 		}else {
@@ -64,7 +64,7 @@ public class LibrarySelector {
 			java.util.Iterator<BaseElement> selIt = selected1.iterator();
 			while(selIt.hasNext()){
 				Element el = (Element) selIt.next();
-				AddContextMenuButton.customFuncBlock = el;
+				MDKExpressionPlugin.customFuncBlock = el;
 			}
 			return true;
 		}else {

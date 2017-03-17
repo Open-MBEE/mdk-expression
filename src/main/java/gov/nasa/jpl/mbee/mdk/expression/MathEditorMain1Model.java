@@ -38,8 +38,8 @@ public class MathEditorMain1Model {
 	//call when "Library..." button is pressed
 	public void setOperationAndCustromFunctions(){ //call from constructor
 		
-		java.util.Collection<Element> operationsCollection = AddContextMenuButton.asciiMathLibraryBlock.getOwnedElement();
-    	java.util.Collection<Element> functionsCollection = AddContextMenuButton.customFuncBlock.getOwnedElement();
+		java.util.Collection<Element> operationsCollection = MDKExpressionPlugin.asciiMathLibraryBlock.getOwnedElement();
+    	java.util.Collection<Element> functionsCollection = MDKExpressionPlugin.customFuncBlock.getOwnedElement();
 		setOperationAndCustromFunctions(operationsCollection, functionsCollection);
 	}
 	private void setOperationAndCustromFunctions(java.util.Collection<Element> operationsCollection, java.util.Collection<Element> functionsCollection){
@@ -82,6 +82,10 @@ public class MathEditorMain1Model {
 		return customFunctionsString;
 	}
 	public Element getCombinedOperation(String _lookingfor){
+		System.out.println( _lookingfor);
+		this.combinedOperationsMap.keySet().forEach(c->{System.out.println(c);});
+		
+		
 		return this.combinedOperationsMap.get(_lookingfor);
 	}
 	//set constraint name if different
