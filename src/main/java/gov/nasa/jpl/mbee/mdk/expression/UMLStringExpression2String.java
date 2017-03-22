@@ -12,12 +12,8 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
 
 public class UMLStringExpression2String extends UML2String {
 	
-	//private String strg = "";
-	//private ValueSpecification root;
 	
 	public UMLStringExpression2String(ValueSpecification root){
-		//this.root = root;
-		//strg = "";
 		super(root);
 	}
 	
@@ -32,19 +28,11 @@ public class UMLStringExpression2String extends UML2String {
 			for ( int i = 0; i < ops.size(); i++ ){
 				parse0(ops.get(i));
 			}
-		/*} else if(n instanceof Expression ) {
-			List<ValueSpecification> ops = ((Expression)n).getOperand();
-			for ( int i = 0; i < ops.size(); i++ ){
-				parse0(ops.get(i));
-			}*/
 		} else if(n instanceof ElementValue){	//leaf
 			String ev = ((NamedElement)((ElementValue)n).getElement()).getName();
 			ev = ev.replace("|", "\u2223"); //having | character having problem with creating xml
 			
 			strg += ev;	//get operand
-			//String zz = Doc2InfixString.unescapeJava(((NamedElement)((ElementValue)n).getElement()).getName());
-			//System.out.println(zz);
-			
 			return;
 		
 		} else if(n instanceof LiteralString ) { //"(" is LiteralString
@@ -56,10 +44,7 @@ public class UMLStringExpression2String extends UML2String {
 		} else if ( n instanceof LiteralInteger){
 			strg += ((LiteralInteger)n).getValue();	//get literal integer
 			return;
-		} /*else if ( n instanceof Property){ mw I don't remember why I added....?????  I don't think it is necessary
-			strg += ((Property)n).getName();
-			return;
-		}*/
+		} 
 		
 	}
 }

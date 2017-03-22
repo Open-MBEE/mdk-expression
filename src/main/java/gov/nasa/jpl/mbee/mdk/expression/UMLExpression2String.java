@@ -12,16 +12,12 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.NamedElement;
 
 public class UMLExpression2String extends UML2String {
 	
-	//private String strg;
-	//private ValueSpecification root;
 	private final String OPERATIONS_PRES = "+ - * / ^";		//set a parenthesis if difference at which position they occur in the string is greater than 1!!!
 	private List<String> customFunctionsString; //used only root is NOT StringExpression
 		
 	public UMLExpression2String(ValueSpecification root, List<String> _customFunctionsString){
 		super(root);
-		//this.root = root;
 		this.customFunctionsString = _customFunctionsString;
-		//strg = "";
 	}
 	
 	public String parse(){	
@@ -49,7 +45,6 @@ public class UMLExpression2String extends UML2String {
 				
 					//**************************************DO & TRAVERSE********************************
 					parse0(zeroNode);	//left child
-					//strg += ((ElementValue)((StringExpression)n).getOperand().get(1)).getElement().getHumanName().toString().substring(OPERATION.length());	//get operation
 					strg += ((NamedElement) ((ElementValue)((StringExpression)n).getOperand().get(1)).getElement()).getName();	//get operation
 					parse0(((ValueSpecification)((StringExpression)n).getOperand().get(2)));	//right child
 					
@@ -58,7 +53,6 @@ public class UMLExpression2String extends UML2String {
 					
 				}
 				else {
-					//String zeroNodeExpression = ((ElementValue)zeroNode).getElement().getHumanName().toString().substring(OPERATION.length());	//get operation
 					String zeroNodeExpression = ((NamedElement) ((ElementValue)zeroNode).getElement()).getName();
 					strg += zeroNodeExpression;
 					
@@ -93,7 +87,6 @@ public class UMLExpression2String extends UML2String {
 		}//end of if StringExpression
 		else if ( n instanceof Expression ){
 			String currentNode =  ((NamedElement) ((ElementValue)((Expression)n).getOperand().get(0)).getElement()).getName();
-			//String currentNode =  ((NamedElement) ((ElementValue)((Expression)n).getOperand().get(0)).getElement()).getName();
 			if (customFunctionsString.contains(currentNode))//CUSTOMIZED FUNCTION NODE
 			{
 				//**************************************DO & TRAVERSE********************************
@@ -116,7 +109,6 @@ public class UMLExpression2String extends UML2String {
 				
 				boolean parIsNeeded = false;
 				if(n != root){
-					//parent = ((ElementValue)((Expression)n.getOwner()).getOperand().get(0)).getElement().getHumanName().toString().substring(OPERATION.length());
 					parent = ((NamedElement)((ElementValue)((Expression)n.getOwner()).getOperand().get(0)).getElement()).getName();
 				}
 				if(OPERATIONS_PRES.contains(parent) && (OPERATIONS_PRES.indexOf(parent)-OPERATIONS_PRES.indexOf(currentNode))>1){	//parent!= unary and root
@@ -149,7 +141,6 @@ public class UMLExpression2String extends UML2String {
 		else if(n instanceof ElementValue){	//leaf
 			
 			//******************************************DO***************************************
-			//strg += ((ElementValue)n).getElement().getHumanName().toString().substring(CONSTRAINT_PARAMETER.length());	//get operand
 			strg += ((NamedElement)((ElementValue)n).getElement()).getName();
 			
 			//****************************************RETURN*************************************

@@ -9,7 +9,10 @@ import org.w3c.dom.NodeList;
 
 public class Doc2InfixStringUtil {
 
-	public static final HashMap<String, String> FN = new HashMap<String, String>(){{
+	public static final HashMap<String, String> FN = new HashMap<String, String>(){
+		private static final long serialVersionUID = 1L;
+
+	{
 		put("msub", "_");
 		put("msup", "^");
 		put("mfrac", "/");
@@ -97,7 +100,10 @@ public class Doc2InfixStringUtil {
 	
 	
 	//commands with argument
-	public static final HashMap<String, TType> COMMAND_W_ARGS = new HashMap<String ,TType>() {{
+	public static final HashMap<String, TType> COMMAND_W_ARGS = new HashMap<String ,TType>() {
+		private static final long serialVersionUID = 1L;
+
+	{
     	    	
     	put ("tilde", TType.UNARY);
 		

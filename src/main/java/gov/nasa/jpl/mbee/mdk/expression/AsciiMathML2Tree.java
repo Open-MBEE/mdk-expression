@@ -5,10 +5,7 @@ import gov.nasa.jpl.mbee.mdk.expression.antlr.generated.ArithmeticBinaryParser;
 
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.ParseTree;
 import javax.swing.*;
 import java.util.Arrays;

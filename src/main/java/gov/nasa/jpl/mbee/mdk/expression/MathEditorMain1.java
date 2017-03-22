@@ -386,7 +386,7 @@ public class MathEditorMain1 {
 		return this.textExpression;
 	}
 	private class ResizablePanel extends JPanel{
-		
+		private static final long serialVersionUID = 1L;
 		Resizable c;
 		public ResizablePanel( Dimension _d, Dimension _parent ){
 			super();
