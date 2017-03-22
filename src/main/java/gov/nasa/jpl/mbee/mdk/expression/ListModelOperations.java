@@ -7,8 +7,7 @@ import javax.swing.AbstractListModel;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Element;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.NamedElement;
 
-public class ListModelOperations extends AbstractListModel  {
-
+public class ListModelOperations extends AbstractListModel {
 	List<Element> model;
 	
 	public ListModelOperations(Collection<Element> _model)
@@ -17,7 +16,7 @@ public class ListModelOperations extends AbstractListModel  {
 		this.model = new ArrayList<Element>();
 		this.model.addAll(_model);
 	}
-	/*public void add(Element _element) {
+	public void add(Element _element) {
 		if ( model.add(_element)) {
 			fireContentsChanged(this, 0, getSize());
 		}
@@ -28,7 +27,6 @@ public class ListModelOperations extends AbstractListModel  {
 			fireContentsChanged(this, 0 , getSize());
 		return removed;
 	}
-	*/
 	public void addAll(Collection<Element> _newElements){
 		model.addAll(_newElements);
 		fireContentsChanged(this, 0, getSize());
@@ -48,5 +46,4 @@ public class ListModelOperations extends AbstractListModel  {
 		model.clear();
 		addAll(_model);
 	}
-
 }

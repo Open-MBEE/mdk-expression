@@ -1,7 +1,5 @@
 package gov.nasa.jpl.mbee.mdk.expression;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -14,7 +12,6 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Expression;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralInteger;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralReal;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralString;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Property;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
 
 public class Doc2InfixString  extends Tree2UMLExpression {
@@ -106,7 +103,8 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				System.out.println("Warn: Couldn't find " + s + " so try to create the constraint parameter...");
 				ev = createConstaintParameter(s);
 				if ( ev != null) { //success creating the constraint parameter
-					this.controller.addOperand((Property)ev.getElement());//add newly created constraintParameter(Property) to the view's listoperandsmodel
+					//this.controller.addOperand((Property)ev.getElement());//add newly created constraintParameter(Property) to the view's listoperandsmodel - not updating entire listmodel from md
+					this.controller.updateOperandsListModel();
 					return new Vs(ev, offset); //n itself and n's sibling msub(and childrens)
 				}
 				else {
@@ -173,7 +171,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 		//search from constraintblock
 		ev = createElementValueFromOperands(s, controller.getConstraintBlock());
 		if ( ev == null) {//may be customFunction
-			ev = createElementValueFromOperation(s, MDKExpressionPlugin.customFuncBlock);
+			ev = createElementValueFromOperation(s);
 			if (ev == null)  //not able to find a constraint parameter from the constaint block
 				return createConstraintParameter(s, i);
 			else
@@ -181,55 +179,6 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 		}
 		else
 			return new Vs(ev, i); //is constraint parameter
-	}
-	private Vs isSubscriptedConstraintParameter(Node n, String s) throws Exception
-	{
-		int i = -1;
-		if( n.getNodeName().equals("mi")){
-			s+= n.getFirstChild().getNodeValue();
-			i++;
-		}
-		Node sibiling = n.getNextSibling();
-		if ( sibiling.getNodeName().equals("mn")){
-			s = this.toStringFromUnicodeMI(s);
-			s+="_";
-			s+= sibiling.getFirstChild().getNodeValue();
-		}
-		else
-			return null; //it is easier to handle by returning null if it is not subscripted constraint parameter.
-		//search from constraintblock
-		ElementValue ev = createElementValueFromOperands(s, controller.getConstraintBlock());
-		if ( ev == null) 
-			throw new Exception ("\"" + s + "\" is not a constraint parameter.");
-		return new Vs(ev, i); //is constraint parameter
-	}
-	
-	private boolean isConstraintParameter(Node n, int allchildrensNumber){ //starts with mi and sibiling must be all mi and mn
-		String s = "";
-		int counter = 0;
-		if ( n.getNodeName().equals("mi")){
-			s+= n.getFirstChild().getNodeValue();
-			counter++;
-		}
-		else
-			return false;// not start with <mi> alphabet
-		Node sibiling;
-		while ((sibiling = n.getNextSibling()) != null){
-			if ( sibiling.getNodeName().equals("mi") || sibiling.getNodeName().equals("mn")){
-				s+= sibiling.getFirstChild().getNodeValue();
-				n = sibiling;
-				counter++;
-			}
-			else 
-				return false;
-		}
-		if ( counter != allchildrensNumber)
-			return false;
-		ElementValue ev = createElementValueFromOperands(s, controller.getConstraintBlock());
-		if ( ev == null) //not exist as a constraint parameter
-			return false;
-		else
-			return true;
 	}
 	
 	//TODO may need to improve
@@ -279,7 +228,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 					||
 					(childNodes.get(0).getNodeName().equals("mi") && childNodes.get(0).getFirstChild().getNodeValue().equals("d") &&
 							childNodes.get(1).getNodeName().equals("mi") &&
-							createElementValueFromOperation(childNodes.get(0).getFirstChild().getNodeValue() + childNodes.get(1).getFirstChild().getNodeValue(), MDKExpressionPlugin.asciiMathLibraryBlock) != null ) //can be dx, dy, dz, dt etc...
+							createElementValueFromOperation(childNodes.get(0).getFirstChild().getNodeValue() + childNodes.get(1).getFirstChild().getNodeValue()) != null ) //can be dx, dy, dz, dt etc...
 					)
 				)
 			return false;
@@ -335,7 +284,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 						temp = toStringFromUnicodeMO(temp);
 					}
 				
-					ElementValue ev = createElementValueFromOperation(temp, MDKExpressionPlugin.asciiMathLibraryBlock);
+					ElementValue ev = createElementValueFromOperation(temp);
 					if (ev == null){
 						String cp = toStringFromUnicodeMI(temp);
 						if ( !cp.equals(temp)){
@@ -369,7 +318,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 									possible = possible + mimnParentSibilings[0];
 									ElementValue ev = createElementValueFromOperands(possible, controller.getConstraintBlock());
 									if ( ev == null)
-										ev = createElementValueFromOperation(possible, MDKExpressionPlugin.customFuncBlock);
+										ev = createElementValueFromOperationCustom(possible);
 										if (ev == null)
 											throw new Exception( "\"" + possible + "\" is not a constraint parameter or custom function.");
 									parentOffset = (int) mimnParentSibilings[1];
@@ -421,7 +370,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 			else if ( Doc2InfixStringUtil.COMMAND_W_ARGS.get(n.getNodeName()) == Doc2InfixStringUtil.TType.UNARY) {//msqrt)
 				Expression expNew = getExpression();
 				//ie., sqrt
-				ElementValue ev = createElementValueFromOperation(Doc2InfixStringUtil.FN.get(n.getNodeName()), MDKExpressionPlugin.asciiMathLibraryBlock);
+				ElementValue ev = createElementValueFromOperation(Doc2InfixStringUtil.FN.get(n.getNodeName()));
 				expNew.getOperand().add(ev);
 				
 				List<Node> nl = Doc2InfixStringUtil.getChildElementNodes(n); 
@@ -438,7 +387,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 			else if ( Doc2InfixStringUtil.COMMAND_W_ARGS.get(n.getNodeName()) == Doc2InfixStringUtil.TType.BINARY) {//root 
 				Expression expNew = getExpression();
 				
-				ElementValue ev = createElementValueFromOperation(Doc2InfixStringUtil.FN.get(n.getNodeName()), MDKExpressionPlugin.asciiMathLibraryBlock);
+				ElementValue ev = createElementValueFromOperation(Doc2InfixStringUtil.FN.get(n.getNodeName()));
 				expNew.getOperand().add(ev);
 				
 				List<Node> nl = Doc2InfixStringUtil.getChildElementNodes(n); 
@@ -527,7 +476,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 					//adding "^" or "-" to expNew (ab to a^b or a_b)
 					ValueSpecification exp1 = expNew.getOperand().get(1);
 					expNew.getOperand().remove(1); 
-					expNew.getOperand().add(createElementValueFromOperation(Doc2InfixStringUtil.FN.get(n.getNodeName()), MDKExpressionPlugin.asciiMathLibraryBlock)); //adding ^ or _
+					expNew.getOperand().add(createElementValueFromOperation(Doc2InfixStringUtil.FN.get(n.getNodeName()))); //adding ^ or _
 					expNew.getOperand().add(exp1);
 				}
 				return new Vs(expNew, 0);
@@ -559,7 +508,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 
 				//adding "^" or "-" to expNew (ab to a^b or a_b)
 				if ( tempVs.offset == 0) {
-					expNew.getOperand().add(createElementValueFromOperation(Doc2InfixStringUtil.FN.get(n.getNodeName()), MDKExpressionPlugin.asciiMathLibraryBlock)); //_ 
+					expNew.getOperand().add(createElementValueFromOperation(Doc2InfixStringUtil.FN.get(n.getNodeName()))); //_ 
 					tempVs = processNode(nl.get(1), false);
 					if ( tempVs == null)
 						throw new Exception ("Not supported - problem in " + nl.get(1).getNodeName());
@@ -598,7 +547,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 									possibleOperator = false;
 								
 								if ( possibleOperator == true && temp != null){
-									ElementValue ev = createElementValueFromOperation(temp, MDKExpressionPlugin.asciiMathLibraryBlock); //ie., d/dx
+									ElementValue ev = createElementValueFromOperation(temp); //ie., d/dx
 									if ( ev != null){
 										expNew.getOperand().add(ev);
 										return new Vs(expNew, 0);
@@ -633,7 +582,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 									possibleOperator = false;
 								
 								if ( possibleOperator == true && temp != null){
-									ElementValue ev = createElementValueFromOperation(temp, MDKExpressionPlugin.asciiMathLibraryBlock); //ie., d/dx
+									ElementValue ev = createElementValueFromOperation(temp); //ie., d/dx
 									if ( ev != null){
 										expNew.getOperand().add(ev);
 										ElementValue cpev = createElementValueFromOperands(constraintparameter, controller.getConstraintBlock());
@@ -650,7 +599,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				expNew.getOperand().add(tempVs.value);
 
 				//adding "^" or "-" to expNew (ab to a^b or a_b)
-				expNew.getOperand().add(createElementValueFromOperation(Doc2InfixStringUtil.FN.get(n.getNodeName()), MDKExpressionPlugin.asciiMathLibraryBlock)); //adding ^ or _ or /
+				expNew.getOperand().add(createElementValueFromOperation(Doc2InfixStringUtil.FN.get(n.getNodeName()))); //adding ^ or _ or /
 				tempVs = processNode(nchilds.get(1), false);
 				if ( tempVs == null)
 					throw new Exception ("Not supported - problem in " + nchilds.get(1).getNodeName());
@@ -846,7 +795,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 	}
 	private Expression createAndAddElementValueToExpression_asciiMathLibraryBlock(Expression exp, String variableString){
 		variableString = toStringFromUnicodeMI(variableString);
-		ElementValue  elemVal = createElementValueFromOperation(variableString, MDKExpressionPlugin.asciiMathLibraryBlock);
+		ElementValue  elemVal = createElementValueFromOperation(variableString);
 		if ( elemVal != null)
 			exp.getOperand().add(elemVal);
 		else

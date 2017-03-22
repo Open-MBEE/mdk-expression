@@ -61,13 +61,21 @@ public abstract class Tree2UMLExpression {
 		return exp;
 	}
 	
+	/////////operations
+	protected ElementValue createElementValueFromOperation(String _lookingForOperation, boolean _showError){
+		return createElementValue(controller.getOperationAsciiMathLibrary(_lookingForOperation), _lookingForOperation, controller.getAsciiMathLibraryBlock(), _showError);
+	}
+	protected ElementValue createElementValueFromOperation(String _lookingForOperation){
+		return createElementValueFromOperation(_lookingForOperation, false);
+	}
+	protected ElementValue createElementValueFromOperationCustom(String _lookingForOperation, boolean _showError){
+		return createElementValue(controller.getOperationAsciiMathLibrary(_lookingForOperation), _lookingForOperation, controller.getCustomFunctionBlock(), _showError);
+	}
+	protected ElementValue createElementValueFromOperationCustom(String _lookingForOperation){
+		return createElementValueFromOperation(_lookingForOperation, false);
+	}
 	
-	protected ElementValue createElementValueFromOperation(String _lookingForOperation, Element _block, boolean _showError){
-		return createElementValue(controller.getCombinedOperation(_lookingForOperation), _lookingForOperation, _block, _showError);
-	}
-	protected ElementValue createElementValueFromOperation(String _lookingForOperation, Element _block){
-		return createElementValue(controller.getCombinedOperation(_lookingForOperation), _lookingForOperation, _block, false);
-	}
+	//operands
 	protected ElementValue createElementValueFromOperands(String _lookingForOperations, Element _block, boolean _showError){
 		return createElementValue(controller.getOperand(_lookingForOperations), _lookingForOperations, _block, _showError);
 	}
@@ -109,7 +117,7 @@ public abstract class Tree2UMLExpression {
 	
 	protected static boolean askToCreateAConstraintParameter(String _name){
 		Object[] options = {"Yes", "No"};
-		int n = JOptionPane.showOptionDialog(null, "Would you like a constraint parameter " + _name + " to be created?",	"Question",
+		int n = JOptionPane.showOptionDialog(null, "Would you like a constraint parameter \"" + _name + "\" to be created?",	"Question",
 		JOptionPane.YES_NO_OPTION,
 		JOptionPane.QUESTION_MESSAGE,
 		null,     //do not use a custom Icon
@@ -135,18 +143,7 @@ public abstract class Tree2UMLExpression {
 		return elemVal;
 	}
 	//end of Util functions
-	/*protected Expression createExpression (String _lookingForOperation, Element _block) {
-		
-		Expression exp = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
-		ElementValue elemVal = createElementValueFromOperation(_lookingForOperation, _block);
-		if (elemVal != null) {
-			//add operation to expression
-			exp.getOperand().add(elemVal);
-			return exp;
-		}
-		return null;
-	}
-	*/
+	
 	protected abstract ValueSpecification traverse0(ParseTree n) throws Exception;
 	
 }

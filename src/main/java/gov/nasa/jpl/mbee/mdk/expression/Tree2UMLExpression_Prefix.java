@@ -8,7 +8,6 @@ import com.nomagic.magicdraw.core.Application;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ElementValue;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Expression;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralReal;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Property;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
 
 
@@ -25,7 +24,7 @@ public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 		if(n instanceof ArithmeticBinaryParser.BinaryExp1Context || n instanceof ArithmeticBinaryParser.BinaryExp2Context
 				|| n instanceof ArithmeticBinaryParser.BinaryExp3Context || n instanceof ArithmeticBinaryParser.EqExpContext){	//=> BINARY EXPRESSION
 			
-			ElementValue elemVal = createElementValueFromOperation(n.getChild(1).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+			ElementValue elemVal = createElementValueFromOperation(n.getChild(1).getText());
 			if (elemVal != null) {
 				Expression exp;// = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
 				if (isRoot){
@@ -53,7 +52,7 @@ public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 			
 		}else if(n instanceof ArithmeticBinaryParser.UnaryExpContext){	//=> UNARY EXPRESSION
 			
-			ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+			ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getChild(0).getText());
 			if (elemVal != null) {
 				Expression exp;// = Application.getInstance().getProject().getElementsFactory().createExpressionInstance();
 				if (isRoot) {
@@ -78,7 +77,7 @@ public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 		}else if(n instanceof ArithmeticBinaryParser.FunExpContext){	//=> CUSTOMIZED FUNCTION EXPRESSION
 			
 
-			ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getText(), AddContextMenuButton.customFuncBlock);
+			ElementValue elemVal = createElementValueFromOperationCustom(n.getChild(0).getText());
 			if (elemVal != null) {
 				Expression exp;
 				if (isRoot){
@@ -116,7 +115,7 @@ public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 			
 		}else if(n instanceof ArithmeticBinaryParser.NegExpContext){	//=> NEGATIVE EXPRESSION
 			
-			ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+			ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getText());
 			if (elemVal != null) {
 				Expression exp;
 				if (isRoot){
@@ -142,7 +141,7 @@ public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 		else if(n instanceof ArithmeticBinaryParser.NegLitExpContext){	//=> NEGATIVE LITERAL EXPRESSION
 			
 			
-			ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+			ElementValue elemVal = createElementValueFromOperation(n.getChild(0).getText());
 			if (elemVal != null) {
 				Expression exp;
 				if (isRoot){
@@ -164,7 +163,7 @@ public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 				catch(NumberFormatException e){	//ELEMENT VALUE
 					//************************************DO****************************************
 					//find the correct operand
-					ElementValue elemVal1 = createElementValueFromOperation(n.getChild(1).getChild(0).getText(), AddContextMenuButton.asciiMathLibraryBlock);
+					ElementValue elemVal1 = createElementValueFromOperation(n.getChild(1).getChild(0).getText());
 					if ( elemVal1 != null)
 					{
 						//add operand to expression
@@ -226,7 +225,7 @@ public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 							elemVal = createConstaintParameter(n.getChild(0).getText());
 							if ( elemVal != null) {//reset error
 								error = false;
-								this.controller.addOperand((Property)elemVal.getElement());//add newly created constraintParameter(Property) to the view's listoperandsmodel
+								this.controller.updateOperandsListModel(); //reload operands list from md model
 								return elemVal;
 							}
 							else {

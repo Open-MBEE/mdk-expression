@@ -3,13 +3,15 @@ package gov.nasa.jpl.mbee.mdk.expression;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.swing.AbstractListModel;
-
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Property;
 
 public class ListModelOperands extends AbstractListModel  {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	List<Property> model;
 	
 	public ListModelOperands(Collection<Property> _model)
@@ -29,10 +31,10 @@ public class ListModelOperands extends AbstractListModel  {
 			fireContentsChanged(this, 0 , getSize());
 		return removed;
 	}*/
-	/*public void addAll(Collection<Property> _newElements){
-		model.addAll(new LinkedList(_newElements));
+	private void addAll(Collection<Property> _newElements){
+		model.addAll(_newElements);
 		fireContentsChanged(this, 0, getSize());
-	}*/
+	}
 	
 	@Override
 	public Object getElementAt(int _index) {
@@ -42,6 +44,10 @@ public class ListModelOperands extends AbstractListModel  {
 	@Override
 	public int getSize() {
 		return model.size();
+	}
+	public void reset(Collection<Property> _model){
+		model.clear();
+		addAll(_model);
 	}
 
 }

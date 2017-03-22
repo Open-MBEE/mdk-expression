@@ -31,16 +31,19 @@ import com.nomagic.uml2.transaction.TransactionManager;
 
 public class MDKExpressionPlugin extends Plugin {
 
-	public static Element asciiMathLibraryBlock = null, customFuncBlock = null;
+	//public static Element asciiMathLibraryBlock = null, customFuncBlock = null;
+	private SelectedOperationBlocks selectedOperationBlocks;
 	public static final String pluginName = "Constraint Editor";
 	private final String NEW = "New...";
 		
 	// transaction listener.
-	private MyTransactionListener mTransactionListener;
+	private OperandsOperationListTransactionListener mTransactionListener;
+	
+	
 	
 	public void init(){	
 		
-		mTransactionListener = new MyTransactionListener();
+		mTransactionListener = new OperandsOperationListTransactionListener();
 		
 		Application.getInstance().getProjectsManager().addProjectListener(new ProjectEventListenerAdapter()
 		{
@@ -156,11 +159,17 @@ public class MDKExpressionPlugin extends Plugin {
 	    public void actionPerformed(ActionEvent e)
 	    {
 	    	//*********************************SET LIBRARY IF NECESSARY********************************
-	    	if(MDKExpressionPlugin.asciiMathLibraryBlock == null || MDKExpressionPlugin.customFuncBlock == null){
+	    	/*if(MDKExpressionPlugin.asciiMathLibraryBlock == null || MDKExpressionPlugin.customFuncBlock == null){
 				LibrarySelector ls = new LibrarySelector();
 				if(!ls.openDialog()){return; }
-			}
-	    	MathEditorMain1Controller mathEditorController = new MathEditorMain1Controller(new SelectedConstraintBlock(this.selectedConstraint.getOwner()), this.selectedConstraint);
+			}*/
+	    	if ( selectedOperationBlocks == null){
+	    		LibrarySelector ls = new LibrarySelector();
+				if(!ls.openDialog()){return;}
+				selectedOperationBlocks = new SelectedOperationBlocks(ls.getAsciiLibrary(), ls.getCustomFunction());
+	    	}
+	    	MathEditorMain1Controller mathEditorController = new MathEditorMain1Controller(selectedOperationBlocks, new SelectedConstraintBlock(this.selectedConstraint.getOwner()), this.selectedConstraint);
+	    	mTransactionListener.setController(mathEditorController);
 			mathEditorController.showView();
 	    }
 	    
@@ -172,6 +181,7 @@ public class MDKExpressionPlugin extends Plugin {
 		 */
 		private static final long serialVersionUID = 1L;
 		private SelectedConstraintBlock selectedConstraintBlock; 
+		
 		
 		public ConstraintEditorDiagramContextMenuAction( @CheckForNull String id, String name, Element _constraintBlock )
 	    {
@@ -186,11 +196,17 @@ public class MDKExpressionPlugin extends Plugin {
 		public void actionPerformed(ActionEvent e){
 	    	
 	    	//*********************************SET LIBRARY IF NECESSARY********************************
-	    	if(MDKExpressionPlugin.asciiMathLibraryBlock == null || MDKExpressionPlugin.customFuncBlock == null){
+	 /*   	if(MDKExpressionPlugin.asciiMathLibraryBlock == null || MDKExpressionPlugin.customFuncBlock == null){
 				LibrarySelector ls = new LibrarySelector();
 				if(!ls.openDialog()){return; }
-			}
+			}*/
 
+	    	if ( selectedOperationBlocks == null){
+	    		LibrarySelector ls = new LibrarySelector();
+				if(!ls.openDialog()){return;}
+				selectedOperationBlocks = new SelectedOperationBlocks(ls.getAsciiLibrary(), ls.getCustomFunction());
+	    	}
+	    	
 	    	//finding which sub-menu(Constraint) is selected
 	    	String ACTION_COMMAND  = e.getActionCommand();
 			Constraint selectedConstraint = null;
@@ -213,7 +229,8 @@ public class MDKExpressionPlugin extends Plugin {
 				}
 			} //end of else
 			
-			MathEditorMain1Controller mathEditorController = new MathEditorMain1Controller(this.selectedConstraintBlock, selectedConstraint);
+			MathEditorMain1Controller mathEditorController = new MathEditorMain1Controller(selectedOperationBlocks, selectedConstraintBlock, selectedConstraint);
+			mTransactionListener.setController(mathEditorController);
 			mathEditorController.showView();
 	    }
 	}

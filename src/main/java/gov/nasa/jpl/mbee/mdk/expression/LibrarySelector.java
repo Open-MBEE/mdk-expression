@@ -15,9 +15,13 @@ public class LibrarySelector {
 	static final String ASCII_LIBRARY = "Block asciiMathOperatorLibrary";
 	static final String CUSTOM_FUNC = "Block customFunctions";
 	
+	Element a;
+	Element c;
+	
 	public LibrarySelector(){
-		
 	}
+	public Element getAsciiLibrary() { return a;}
+	public Element getCustomFunction() { return c;}
 	public boolean openDialog()
 	{
 		//Use ElementSelectionDlgFactory.create(...) methods to create element selection dialog
@@ -45,8 +49,9 @@ public class LibrarySelector {
 				}
 			java.util.Iterator<BaseElement> selIt = selected1.iterator();
 			while(selIt.hasNext()){
-				Element el = (Element) selIt.next();
-				MDKExpressionPlugin.asciiMathLibraryBlock = el;
+				a = (Element) selIt.next();
+				//Element el = (Element) selIt.next();
+				//MDKExpressionPlugin.asciiMathLibraryBlock = el;
 			}
 			
 		}else {
@@ -63,8 +68,9 @@ public class LibrarySelector {
 				}
 			java.util.Iterator<BaseElement> selIt = selected1.iterator();
 			while(selIt.hasNext()){
-				Element el = (Element) selIt.next();
-				MDKExpressionPlugin.customFuncBlock = el;
+				//Element el = (Element) selIt.next();
+				//MDKExpressionPlugin.customFuncBlock = el;
+				c = (Element) selIt.next();
 			}
 			return true;
 		}else {
