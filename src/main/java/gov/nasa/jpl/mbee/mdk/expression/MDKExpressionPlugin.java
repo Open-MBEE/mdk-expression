@@ -35,16 +35,15 @@ public class MDKExpressionPlugin extends Plugin {
 	private SelectedOperationBlocks selectedOperationBlocks;
 	public static final String pluginName = "Constraint Editor";
 	private final String NEW = "New...";
-		
-	// transaction listener.
+		 
+	// transaction listener for adding and deleting for constraint parameters(operands) and operations(asciimathlibrary and custom)
 	private OperandsOperationListTransactionListener mTransactionListener;
-	
-	
 	
 	public void init(){	
 		
+		//This transition listener may not necessary for mdk expression. Because after adding constraint parameters and functions using md, a user can simply reopend the expression.
+		//The listener is listening all the property change even not relating to the mdk expression.
 		mTransactionListener = new OperandsOperationListTransactionListener();
-		
 		Application.getInstance().getProjectsManager().addProjectListener(new ProjectEventListenerAdapter()
 		{
 			@Override

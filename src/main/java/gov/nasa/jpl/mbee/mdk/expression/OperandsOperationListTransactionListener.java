@@ -9,10 +9,12 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Operation;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Property;
 
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
- * Transaction listener, which listens if attribute is created in transaction, and 
+ * Transaction listener, which listens if attribute is created or deleted in transaction, and 
  * 1) if attribute is Operation and its owner is one of library blocks (AsciiMathLibrary or CustomFunction), then update the UI operation list from the library blocks elements.
  * 2) if attribute is Property and its owner is the constraint block currently browsing, then update the UI operand list from the constraint block's elements.
  * 
@@ -33,14 +35,14 @@ public class OperandsOperationListTransactionListener implements TransactionComm
 			if ( controller != null){
 				for (PropertyChangeEvent event : events)
 				{
-					if (UML2MetamodelConstants.INSTANCE_CREATED.equals(event.getPropertyName()))
+					Object ss = event.getSource();
+					if (UML2MetamodelConstants.INSTANCE_CREATED.equals(event.getPropertyName()) ||
+							UML2MetamodelConstants.INSTANCE_DELETED.equals(event.getPropertyName())	)
 					{
 						Object source = event.getSource();
 						if (source instanceof Operation)
 						{
-							Operation operation = (Operation) source;
-							Element owner = operation.getOwner();
-							
+							Element owner = ((Operation)source).getOwner();
 							if (owner instanceof Classifier){
 								SelectedOperationBlocks scb;
 								if ((scb = controller.getModel().getSelectedOperationBlocks()).isBlock(owner)) {
@@ -48,16 +50,21 @@ public class OperandsOperationListTransactionListener implements TransactionComm
 									controller.updateOperationsListModel(); //updating the operation list from the md model 
 								}
 							}
+							else if ( owner == null && controller.isOperationsListChange()) //deleting so woner is null
+								controller.updateOperationsListModel();
 						}
 						else if ( source instanceof Property){
 							Element owner = ((Property)source).getOwner();
 							if (owner == controller.getModel().getSelectedConstraintBlock().getConstraintBlock()) {
 								controller.updateOperandsListModel(); //updating the operand list from the md model
-							}
+							} else if (owner == null && controller.isOperandsListChanged()) //deleting so owner is null
+								controller.updateOperandsListModel(); //updating the operand list from the md model
 						}
 					}
+						
 				}
-			}
+			}//end of controler != null
+			
 		};
 	}
 }

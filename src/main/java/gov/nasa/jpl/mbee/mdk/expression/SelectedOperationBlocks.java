@@ -92,5 +92,8 @@ public class SelectedOperationBlocks {
 	public Element getCustomFuncBlock() {
 		return customFuncBlock;
 	}
+	public int getOperationSize(){
+		return aCollection.size() + cCollection.size();
+	}
 	
 }

@@ -71,6 +71,18 @@ public class MathEditorMain1Controller implements ActionListener {
 				}
 		});
 	}
+	//return true if GUI operandsList size is same as md model's data.  Otherwise return false
+	public boolean isOperandsListChanged(){
+		if (operandsListModel.getSize() != model.getSelectedConstraintBlock().getOperands().size())
+			return false;
+		return true;
+	}
+	//return true if GUI operationsList size is the same as md model's data.  Otherwise return false
+	public boolean isOperationsListChange(){
+		if (operationsListModel.getSize() != model.getSelectedOperationBlocks().getOperationSize())
+			return false;
+		return true;
+	}
 
 	
 	public void updateOperationsListModel(){
