@@ -8,6 +8,7 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Element;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.NamedElement;
 
 public class ListModelOperations extends AbstractListModel {
+	private static final long serialVersionUID = 1L;
 	List<Element> model;
 	
 	public ListModelOperations(Collection<Element> _model)
