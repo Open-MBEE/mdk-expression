@@ -132,7 +132,6 @@ public abstract class Tree2UMLExpression {
 		
 		ElementValue elemVal = Application.getInstance().getProject().getElementsFactory().createElementValueInstance();
 		Stereotype stereotype = StereotypesHelper.getStereotype(Application.getInstance().getProject(),MDSysMLConstants.CONSTRAINTPARAMETER);
-		System.out.println(stereotype.getHumanName());
 		Port p = Application.getInstance().getProject().getElementsFactory().createPortInstance();
 		p.setName(_lookingFor);
 		StereotypesHelper.addStereotype(p, stereotype);

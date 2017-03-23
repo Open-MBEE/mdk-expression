@@ -9,9 +9,7 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Operation;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Property;
 
 import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Transaction listener, which listens if attribute is created or deleted in transaction, and 

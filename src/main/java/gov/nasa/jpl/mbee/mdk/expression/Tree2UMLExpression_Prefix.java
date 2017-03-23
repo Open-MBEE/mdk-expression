@@ -213,7 +213,6 @@ public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 			}
 			catch(NumberFormatException e){	//ELEMENT VALUE
 				
-				System.out.println("Prefix");
 				//find the correct operands -- error message show up if the constraint parameter not found in the current constraint block.
 				ElementValue elemVal = createElementValueFromOperands(n.getChild(0).getText(), controller.getConstraintBlock());
 				if (elemVal == null){ //not able to find a constraint parameter from the constaint block
