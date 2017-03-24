@@ -69,10 +69,10 @@ public abstract class Tree2UMLExpression {
 		return createElementValueFromOperation(_lookingForOperation, false);
 	}
 	protected ElementValue createElementValueFromOperationCustom(String _lookingForOperation, boolean _showError){
-		return createElementValue(controller.getOperationAsciiMathLibrary(_lookingForOperation), _lookingForOperation, controller.getCustomFunctionBlock(), _showError);
+		return createElementValue(controller.getOperationCustom(_lookingForOperation), _lookingForOperation, controller.getCustomFunctionBlock(), _showError);
 	}
 	protected ElementValue createElementValueFromOperationCustom(String _lookingForOperation){
-		return createElementValueFromOperation(_lookingForOperation, false);
+		return createElementValueFromOperationCustom(_lookingForOperation, false);
 	}
 	
 	//operands

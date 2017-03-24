@@ -161,7 +161,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				s+=toStringFromUnicodeMI(firstChild.getFirstChild().getNodeValue()) + "_" + toStringFromUnicodeMI(secondChild.getFirstChild().getNodeValue());
 				ev = createElementValueFromOperands(s, controller.getConstraintBlock());
 				if ( ev != null)
-					return new Vs(ev, i+1); //n itself and n's sibling msub(and childrens)
+					return new Vs(ev, i+1); //n itself and n's sibling msub(and children)
 				else
 					return createConstraintParameter(s, i+1);
 			}
@@ -171,8 +171,8 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 		//search from constraintblock
 		ev = createElementValueFromOperands(s, controller.getConstraintBlock());
 		if ( ev == null) {//may be customFunction
-			ev = createElementValueFromOperation(s);
-			if (ev == null)  //not able to find a constraint parameter from the constaint block
+			ev = createElementValueFromOperationCustom(s);
+			if (ev == null)  //not able to find a constraint parameter from the constraint block
 				return createConstraintParameter(s, i);
 			else
 				return new Vs(ev, i); //custom function
@@ -279,8 +279,6 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 					}
 					else {
 						String text = unescapeJava(temp);
-						System.out.println(text);
-					
 						temp = toStringFromUnicodeMO(temp);
 					}
 				
