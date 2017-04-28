@@ -74,7 +74,15 @@ public class SelectedOperationBlocks {
 				return null;
 			}
 	}*/
-	
+	public Collection<String> getOperationsInString() {
+		List<String> l = new ArrayList<String>();
+		aCollection.forEach(o->l.add(((NamedElement)o).getName()));
+		cCollection.forEach(o->l.add(((NamedElement)o).getName()));
+		//same as
+		//getOperations().forEach(o->l.add(((NamedElement)o).getName()));
+		return l;
+	}
+
 	//return both asciimathlibrary and customfunctions
 	public Collection<Element> getOperations(){
 		Stream<Element> combinedStream = Stream.of(aCollection, cCollection)

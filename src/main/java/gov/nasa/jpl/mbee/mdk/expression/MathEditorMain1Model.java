@@ -45,9 +45,8 @@ public class MathEditorMain1Model {
 		return this.selectedConstraintBlock.getOperands();
 	}
 	public List<String> getOperandsAndOperationsInString(){
-		List<String> l = new ArrayList<String>();
-		getOperands().forEach(o -> l.add(o.getName()));
-		getOperations().forEach(o->l.add(((NamedElement)o).getName()));
+		List<String> l = selectedConstraintBlock.getOperandsInString();
+		l.addAll(selectedOperationBlocks.getOperationsInString());
 		return l;
 	}
 	public Element getOperand(String _lookingfor){

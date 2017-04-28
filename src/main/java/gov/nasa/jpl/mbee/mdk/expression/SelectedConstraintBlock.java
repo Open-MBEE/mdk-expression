@@ -1,6 +1,8 @@
 package gov.nasa.jpl.mbee.mdk.expression;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Constraint;
@@ -35,6 +37,11 @@ public class SelectedConstraintBlock {
 	/*public void setConstraints(Collection<Constraint> constraints) {
 		this.constraints = constraints;
 	}*/
+	public List<String> getOperandsInString(){
+		List<String> l = new ArrayList<String>();
+		getOperands().forEach(o -> l.add(o.getName()));
+		return l;
+	}
 
 	public Collection<Property> getOperands() {
 		return ((StructuredClassifier)constraintBlock).getPart();
