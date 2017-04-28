@@ -32,8 +32,9 @@ public class SelectedOperationBlocks {
 	public void reset(){
 		//java.util.Collection<Element> operationsCollection = MDKExpressionPlugin.asciiMathLibraryBlock.getOwnedElement();
     	//java.util.Collection<Element> functionsCollection = MDKExpressionPlugin.customFuncBlock.getOwnedElement();
-		aCollection = this.asciiMathLibraryBlock.getOwnedElement();
-		cCollection = this.customFuncBlock.getOwnedElement();
+		//only NamedElement are valid
+		aCollection = this.asciiMathLibraryBlock.getOwnedElement().stream().filter(e -> e instanceof NamedElement).collect(Collectors.toList());
+		cCollection = this.customFuncBlock.getOwnedElement().stream().filter(e -> e instanceof NamedElement).collect(Collectors.toList());
 	}
 	public void reset(Element _a, Element _c){
 		this.asciiMathLibraryBlock = _a;
@@ -73,6 +74,7 @@ public class SelectedOperationBlocks {
 				return null;
 			}
 	}*/
+	
 	//return both asciimathlibrary and customfunctions
 	public Collection<Element> getOperations(){
 		Stream<Element> combinedStream = Stream.of(aCollection, cCollection)
