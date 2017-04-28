@@ -7,7 +7,7 @@ import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.TreeWalker;
 
 /**
- * This file preprocess asciimath xml because f and g in expression create unnecessary mrow.
+ * This file preprocess asciimath xml because f and g in expression create unnecessary mrow (exception mfrac)
  * This will remove extra mrow from the xml so easier to prcess by Doc2InfixString.java
  * i.e.,
  *  <mi>a</mi>
@@ -28,6 +28,27 @@ import org.w3c.dom.traversal.TreeWalker;
             <mi>x</mi>
             <mo>)</mo>
           </mrow>
+
+
+//for case below having mfrac below no mrow removing
+ <math>
+ 	<mi>d</mi>
+ 		<mfrac>
+ 			<mrow> ---- not removing this mrow because mfrac requires 2 children.  Removing mrow can not see f(x) as a constraint parameter.
+ 				<mi>f</mi>
+				<mrow>
+					<mo>(</mo>
+					<mi>x</mi>
+					<mo>)</mo>
+				</mrow>
+ 			</mrow>
+ 			<mrow>
+ 				<mi>d</mi>
+ 				<mi>y</mi>
+ 			</mrow>
+ 		</mfrac>
+ </math>
+
  * @author Miyako Wilson
  *
  */
@@ -50,14 +71,19 @@ public class DocPreprocess {
 	}
 	private static final void traverseLevel(TreeWalker walker, String indent) { 
 		
-		// describe current node:   
+		// describe current node: ï¿½ï¿½
 		Node parent = walker.getCurrentNode();
 		//System.out.println(indent + "- " + parent.getNodeName());
 
 		Node achild;
-		// traverse children:     
+		Node grandgrandparent;
+		// traverse children: ï¿½ï¿½ï¿½ï¿½
 		for (Node n = walker.firstChild(); n != null; n = walker.nextSibling())	{ 
-			if ( n.getNodeName().equals("mi") && (n.getFirstChild().getNodeValue().equals("g") ||n.getFirstChild().getNodeValue().equals("f")) && n.getParentNode().getNodeName().equals("mrow")){
+			if ( n.getNodeName().equals("mi") &&
+					(n.getFirstChild().getNodeValue().equals("g") || n.getFirstChild().getNodeValue().equals("f")) &&
+						n.getParentNode().getNodeName().equals("mrow") &&
+					   ((grandgrandparent = n.getParentNode().getParentNode()) == null || !grandgrandparent.getNodeName().equals("mfrac"))
+					){
 				
 				Node grandparent = parent.getParentNode(); //mrow's parent
 				Node insertBefore = parent.getNextSibling();
@@ -74,7 +100,7 @@ public class DocPreprocess {
 			}
 			traverseLevel(walker, indent + '\t');
 		}
-		// return position to parent    
+		// return position to parentï¿½ï¿½ï¿½ï¿½
 		walker.setCurrentNode(parent);
 	}
 }
