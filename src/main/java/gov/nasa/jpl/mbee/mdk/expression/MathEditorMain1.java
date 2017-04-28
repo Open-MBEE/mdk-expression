@@ -270,8 +270,8 @@ public class MathEditorMain1 {
 		
 		bottomLeftPanel.setLayout(new BoxLayout(bottomLeftPanel, BoxLayout.LINE_AXIS));
 		bottomLeftPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-		bottomLeftPanel.add(rdbtnPrefixExp);
-		bottomLeftPanel.add(rdbtnInfixStringExp);
+		//bottomLeftPanel.add(rdbtnPrefixExp);
+		//bottomLeftPanel.add(rdbtnInfixStringExp);
 		//bottomLeftPanel.add(rdbtnPromelaltl);
 		
 		//bottomRightPanel
