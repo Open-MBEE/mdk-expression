@@ -59,27 +59,24 @@ public class SelectedOperationBlocks {
 		else 
 			return null;
 	}
-	/*public Element getOperation(String _lookingfor){ //Property.get() throws NoSuchElementException if not found
-			Optional<Element> p =  aCollection.stream()
-					.filter(e ->  ((NamedElement)e).getName().equals(_lookingfor))
-					.findFirst();//.get();
-			if ( p.hashCode() != 0)
-				return p.get();
-			else {
-				p =  aCollection.stream()
-						.filter(e ->  ((NamedElement)e).getName().equals(_lookingfor))
-						.findFirst();//.get();
-				if ( p.hashCode() != 0)
-					return p.get();
-				return null;
-			}
-	}*/
-	public Collection<String> getOperationsInString() {
+	public Collection<String> getOperationsInStringForAutoComplete() {
 		List<String> l = new ArrayList<String>();
-		aCollection.forEach(o->l.add(((NamedElement)o).getName()));
-		cCollection.forEach(o->l.add(((NamedElement)o).getName()));
+
+		//adding () for a operator like sin so auto-complete will show "sin( )"
+		//or add ()() for a operator like frac so auto-complete will show "frac( )( )"
+		aCollection.stream()
+				.forEach( o -> {
+					if ( MDSysMLConstants.suffixParentheses1.contains(((NamedElement)o).getName()))
+						l.add(((NamedElement)o).getName()+ "( )");
+					else if ( MDSysMLConstants.suffixParentheses2.contains(((NamedElement)o).getName()))
+						l.add(((NamedElement)o).getName()+ "( )( )");
+					else
+						l.add(((NamedElement)o).getName());
+				});
+
 		//same as
 		//getOperations().forEach(o->l.add(((NamedElement)o).getName()));
+		cCollection.forEach(o->l.add(((NamedElement)o).getName() + "( )"));
 		return l;
 	}
 

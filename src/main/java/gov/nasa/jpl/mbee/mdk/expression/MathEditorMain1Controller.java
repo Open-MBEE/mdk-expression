@@ -25,7 +25,7 @@ import net.sourceforge.jeuclid.converter.Converter;
 
 public class MathEditorMain1Controller implements ActionListener {
 	
-	private static boolean DEBUG = false;
+	private static boolean DEBUG = true;
 	private MathEditorMain1Model model;
 	private MathEditorMain1Controller controller;
 	private MathEditorMain1  view;
@@ -60,9 +60,8 @@ public class MathEditorMain1Controller implements ActionListener {
 					view.initialize();
 					
 					//AutoComplete in the expression.  The suggestion only contains operands and custom functions.
-					List<String> words = model.getOperandsAndOperationsInString();
+					List<String> words = model.getOperandsAndOperationsInStringForAutoComplete();
 					//model.getOperandsInString();
-					//words.addAll(model.getCustomOperationsInString());
 					new AutoCompleteJTextField( view.getTextField(), words);
 					view.displayExpression(model.getEditExpression(), model.isStringExpression(), model.getName());
 					
@@ -89,7 +88,8 @@ public class MathEditorMain1Controller implements ActionListener {
 		this.operationsListModel.reset(model.getOperations());
 	}
 	public void updateOperandsListModel(){
-		this.operandsListModel.reset(model.getOperands());
+		if ( this.operandsListModel != null) //null when testing
+			this.operandsListModel.reset(model.getOperands());
 	}
 	public ActionListener getLibraryButtonActionListener() { return this.libraryButtonActionListener;} 
 	

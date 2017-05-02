@@ -1,6 +1,5 @@
 package gov.nasa.jpl.mbee.mdk.expression;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ElementValue;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Expression;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Property;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.NamedElement;
 
 public class MathEditorMain1Model {
 		
@@ -44,9 +42,9 @@ public class MathEditorMain1Model {
 	public Collection<Property> getOperands(){
 		return this.selectedConstraintBlock.getOperands();
 	}
-	public List<String> getOperandsAndOperationsInString(){
+	public List<String> getOperandsAndOperationsInStringForAutoComplete(){
 		List<String> l = selectedConstraintBlock.getOperandsInString();
-		l.addAll(selectedOperationBlocks.getOperationsInString());
+		l.addAll(selectedOperationBlocks.getOperationsInStringForAutoComplete());
 		return l;
 	}
 	public Element getOperand(String _lookingfor){
