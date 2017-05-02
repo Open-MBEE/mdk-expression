@@ -35,12 +35,12 @@ public class MDKExpressionPlugin extends Plugin {
 	private SelectedOperationBlocks selectedOperationBlocks;
 	public static final String pluginName = "Constraint Editor";
 	private final String NEW = "New...";
+	//private final String TEST = "TEST...";
 		 
 	// transaction listener for adding and deleting for constraint parameters(operands) and operations(asciimathlibrary and custom)
 	private OperandsOperationListTransactionListener mTransactionListener;
 	
-	public void init(){	
-		
+	public void init(){
 		//This transition listener may not necessary for mdk expression. Because after adding constraint parameters and functions using md, a user can simply reopend the expression.
 		//The listener is listening all the property change even not relating to the mdk expression.
 		mTransactionListener = new OperandsOperationListTransactionListener();
@@ -123,6 +123,7 @@ public class MDKExpressionPlugin extends Plugin {
 		_manager.addCategory(category);									
 		category.setNested(true);
 		category.addAction(new ConstraintEditorDiagramContextMenuAction(null, NEW,_constraintBlock));
+		//category.addAction(new ConstraintEditorDiagramContextMenuAction(null, TEST,_constraintBlock));
 		SelectedConstraintBlock selectedConstraintBlock  = new SelectedConstraintBlock(_constraintBlock);
 		//adding constraints owned by the constraint block to the submenus.
 		selectedConstraintBlock.getConstraints().forEach(c -> { 	
@@ -215,6 +216,13 @@ public class MDKExpressionPlugin extends Plugin {
 				selectedConstraint.setOwner(this.selectedConstraintBlock.getConstraintBlock());	//under which block it lives
 				((StructuredClassifier)this.selectedConstraintBlock.getConstraintBlock()).get_constraintOfConstrainedElement().add(selectedConstraint);	//to which block it's referred
 			}
+			/*else if ( ACTION_COMMAND.equals(TEST))
+			{
+				this.selectedConstraintBlock.getConstraints().forEach( c-> {
+					MathEditorMain1Model model = new MathEditorMain1Model(selectedConstraintBlock, c, selectedOperationBlocks);
+					System.out.println(model.getEditExpression());
+				});
+			}*/
 			else
 			{
 				Constraint c;
