@@ -17,11 +17,6 @@ public class ListModelOperations extends AbstractListModel {
 		this.model = new ArrayList<Element>();
 		this.model.addAll(_model);
 	}
-	public void add(Element _element) {
-		if ( model.add(_element)) {
-			fireContentsChanged(this, 0, getSize());
-		}
-	}
 	public boolean removeElement(Element _element) {
 		boolean removed = model.remove(_element);
 		if (removed)
