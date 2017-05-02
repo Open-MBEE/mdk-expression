@@ -149,24 +149,65 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 		}
 		
 		ElementValue ev;
-		//xy_123 <mi>x <msub><mi>y<mn>123....
-		Node msub;
-		if(previous_node != null && (msub = previous_node.getNextSibling()) != null && msub.getNodeName().equals("msub")){
-			//assume msub always has two childrens.
-			Node firstChild = msub.getFirstChild();
-			Node secondChild = firstChild.getNextSibling();
-			if ( (firstChild.getNodeName().equals("mi")|| firstChild.getNodeName().equals("mn"))
-					&&
-					(secondChild.getNodeName().equals("mi")|| secondChild.getNodeName().equals("mn"))){
-				s+=toStringFromUnicodeMI(firstChild.getFirstChild().getNodeValue()) + "_" + toStringFromUnicodeMI(secondChild.getFirstChild().getNodeValue());
-				ev = createElementValueFromOperands(s, controller.getConstraintBlock());
-				if ( ev != null)
-					return new Vs(ev, i+1); //n itself and n's sibling msub(and children)
-				else
-					return createConstraintParameter(s, i+1);
+		Node msub_or_msubsup;
+		if(previous_node != null ) {
+		//msub
+			//xy_123 <mi>x <msub><mi>y</mi> <mn>123</mn> </msub> previous_node is x
+			//x1_12 <mi>x</mi><msub><mn>1</mn><mn>12</mn></msub>
+			//x1_n <mi>x</mi><msub><mn>1</mn><mi>n</mi></msub>
+		//msubsup
+			//z1_12^34 <mi>z</mi>    <mrow>      <msubsup>        <mn>1</mn>        <mn>12</mn>        <mn>34</mn>      </msubsup>    </mrow>
+			//z1_n^34
+			//xy_123^34 <mi>x</mi> <mrow><msubsup><mi>y</mi><mn>123</mn><mn>34</mn></msubsup></mrow>  --- previous_node = x and m_sub_or_msubsup is mrow
+			boolean ismrow = false;
+			if ((msub_or_msubsup = previous_node.getNextSibling()) != null ) {
+				if ( msub_or_msubsup.getNodeName().equals("mrow"))
+				{
+					msub_or_msubsup = msub_or_msubsup.getFirstChild();
+					ismrow = true;
+				}
+				if ( msub_or_msubsup.getNodeName().equals("msub") || msub_or_msubsup.getNodeName().equals("msubsup"))
+				{
+					//assume msub always has two children.
+					Node firstChild = msub_or_msubsup.getFirstChild(); //y for (xy_123), 1 for (x1_12), 1 for (x1_n)
+					Node secondChild = firstChild.getNextSibling(); //123 for (xy_123), 12 for(x1_12), n for (x1_n)
+					if ((firstChild.getNodeName().equals("mi") || firstChild.getNodeName().equals("mn"))
+							&&
+							(secondChild.getNodeName().equals("mi") || secondChild.getNodeName().equals("mn")))
+					{
+						s += toStringFromUnicodeMI(firstChild.getFirstChild().getNodeValue()) + "_" + toStringFromUnicodeMI(secondChild.getFirstChild().getNodeValue());
+						ev = createElementValueFromOperands(s, controller.getConstraintBlock());
+						if ( ismrow == false ) {// msub_or_msubsup.getNodeName().equals("msub")) {
+							if (ev != null)
+								return new Vs(ev, i + 1); //n itself and n's sibling msub(and children)
+							else
+								return createConstraintParameter(s, i + 1);
+						} else if (msub_or_msubsup.getNodeName().equals("msubsup") ){ //msubsup with mrow
+							Expression expNew = getExpression();
+							if ( ev != null)
+								expNew.getOperand().add(ev);
+							else {
+								Vs xx = createConstraintParameter(s, 0); //of set is not used
+								if  (xx != null)
+									expNew.getOperand().add(xx.value);
+							}
+							Node thirdChild = secondChild.getNextSibling();
+							expNew.getOperand().add(createElementValueFromOperation(Doc2InfixStringUtil.FN.get("msup"))); //adding ^
+
+							Vs tempVs = processNode(thirdChild, true);
+							if ( tempVs == null)
+								throw new Exception ("Not supported - problem in " + thirdChild.getFirstChild().getNodeValue());
+							expNew.getOperand().add(tempVs.value);
+							return new Vs(expNew, i+1);
+
+						} else
+							throw new Exception ("Not supported.");
+					}
+				}
 			}
 		}
 		//msub was not mimn's sibling or not valid msub to be a constraint parameter.
+
 		
 		//search from constraintblock
 		ev = createElementValueFromOperands(s, controller.getConstraintBlock());
@@ -210,7 +251,8 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 			 */
 		//todo other case like mfrac????
 		else if ( childNodes.size() == 1 && childNodes.get(0).hasChildNodes() && childNodes.get(0).getFirstChild().getNodeType() != Node.TEXT_NODE 
-				&& !childNodes.get(0).getNodeName().equals("msub") && !childNodes.get(0).getNodeName().equals("mfrac") && !childNodes.get(0).getNodeName().equals("msqrt") && !childNodes.get(0).getNodeName().equals("mroot")) {
+				&& !childNodes.get(0).getNodeName().equals("msub") && !childNodes.get(0).getNodeName().equals("mfrac")
+				&& !childNodes.get(0).getNodeName().equals("msqrt") && !childNodes.get(0).getNodeName().equals("mroot")) {
 			return false;
 		}
 			//else if if 2 childNodes of number like -100 +10, then () may not needed  
@@ -392,11 +434,25 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				if( nl.size() != 2) { //root and one argument 
 					throw new Exception ("Not supported - problem in " + n + ". The function should have two arguments.");
 				}
-				for ( int i = 0; i < 2; i++){
-					tempVs = processNode(nl.get(i), false);
+				if (n.getNodeName().equals("mroot")){ //when stringexpression(root3x) is converted to Doc, 3 and x is switched <mroot><mi>x</mi><mn>3</mn></mroot> but stringexpression should be kept as 3x when it stored in md
+					tempVs = processNode(nl.get(1), false);
 					if ( tempVs == null)
-						throw new Exception ("Not supported - problem in " + nl.get(i).getNodeName());
+						throw new Exception ("Not supported - problem in " + nl.get(1).getNodeName());
 					expNew.getOperand().add(tempVs.value);
+					tempVs = processNode(nl.get(0), false);
+					if ( tempVs == null)
+						throw new Exception ("Not supported - problem in " + nl.get(0).getNodeName());
+					expNew.getOperand().add(tempVs.value);
+				}
+				else
+				{
+					for (int i = 0; i < 2; i++)
+					{
+						tempVs = processNode(nl.get(i), false);
+						if (tempVs == null)
+							throw new Exception("Not supported - problem in " + nl.get(i).getNodeName());
+						expNew.getOperand().add(tempVs.value);
+					}
 				}
 				return new Vs(expNew, 0);
 			}
@@ -417,7 +473,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 			        <mi>x</mi>
 			        <mi>y</mi>
 			      </mrow>
-			      <mo>¯</mo>
+			      <mo>ï¿½</mo>
 			    </mover>
 			    <munder>
 			      <mi>A</mi>
@@ -603,7 +659,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 					throw new Exception ("Not supported - problem in " + nchilds.get(1).getNodeName());
 				expNew.getOperand().add(tempVs.value);
 				return new Vs(expNew, 0);
-			}
+			} //end of else if ( Doc2InfixStringUtil.COMMAND_W_ARGS.get(n.getNodeName()) == Doc2InfixStringUtil.TType.INFIX) { //mfrac msup
 			
 			else if (n.getNodeName().equals("msubsup") || n.getNodeName().equals("munderover")){
 				Expression expNew = getExpression();
@@ -614,13 +670,20 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				
 				//adding "_" or "^" to expNew  (abc to a_b^c)				
 				//i = 0
-				if (nl.get(0).getNodeName().equals("mi")) {//may like be x_1
+				/*if (nl.get(0).getNodeName().equals("mi")) {//may like be x_1
+					tempVs = processNode(nl.get(0) + nl.get(1), false);
+				}
+				*/
+				if ( !nl.get(0).getNodeName().equals("mi"))//case like "x1_12^34" need to be "(x1)_12^34" to be supported.
+					throw new Exception("Invalid sub-superscript( " + nl.get(0).getNodeName() + ").  Please put () around the operand.");
+				else if ( nl.get(0).getNodeName().equals("mi")){
 					tempVs = processNode(nl.get(0), true);
 				}
-				else
-					tempVs = processNode(nl.get(0), false);
+
+
+
 				if ( tempVs == null)
-					throw new Exception ("Not supported - problem in " + nl.get(0).getNodeName());
+					throw new Exception ("Invalid sub-superscript( " + nl.get(0).getNodeName() + ").  Please put () around the operand.");
 				expNew.getOperand().add(tempVs.value);
 				expNew = createAndAddElementValueToExpression_asciiMathLibraryBlock(expNew, "_");//"^ or "_"
 				//i = 1 to 2
