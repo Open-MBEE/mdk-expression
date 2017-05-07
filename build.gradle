@@ -49,10 +49,10 @@ configurations {
 dependencies {
     antlr group: 'org.antlr', name: 'antlr4', version: '4.5.3'
 
-	preCompile group: 'gov.nasa.jpl.cae.magicdraw.packages', name: 'cae_md18_4_vendor', version: '1.2', ext: 'zip'
+    preCompile group: 'gov.nasa.jpl.cae.magicdraw.packages', name: 'cae_md18_4_vendor', version: '1.2', ext: 'zip'
 
     //compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile fileTree(dir: 'build/dependency-cache/extracted', include: ['lib/**/*.jar','plugins/**/*.jar'])
+    compile fileTree(dir: 'build/dependency-cache/extracted', include: ['lib/**/*.jar', 'plugins/**/*.jar'])
     compile fileTree(dir: 'lib', include: ['*.jar'])
     compile group: 'net.sourceforge.jeuclid', name: 'jeuclid-core', version: '3.1.9'
     compile group: 'org.antlr', name: 'antlr4', version: '4.5.3'
@@ -96,7 +96,7 @@ class PreDist extends DefaultTask {
 
     @TaskAction
     public void executeTask() {
-    
+
         project.copy {
             from 'src/main/dist'
             exclude 'template'
@@ -115,7 +115,9 @@ class PreDist extends DefaultTask {
 
         String pluginLibraries = ''
         project.fileTree(dir: "build/generated-dist/plugins/${groupId}", include: '**/*.jar').each { file ->
-            pluginLibraries += '\t\t<library name=\"' + file.absolutePath.replaceAll(~/.*build\/generated-dist\/plugins\/${groupId}\//, '') + '\"/>' + System.lineSeparator()
+            pluginLibraries += '\t\t<library name=\"' + file.absolutePath.replaceAll(~/.*build\/generated-dist\/plugins\/${
+                groupId
+            }\//, '') + '\"/>' + System.lineSeparator()
         }
         project.copy {
             from "src/main/dist/template/plugins/${groupId}/plugin.xml"
@@ -207,7 +209,8 @@ artifactory {
     contextUrl = 'https://cae-artifactory.jpl.nasa.gov/artifactory/'
     publish {
         repository {
-            repoKey = 'plugins-' + (version.endsWith('SNAPSHOT') ? 'snapshot' : 'release') + '-local' // The Artifactory repository key to publish to
+            repoKey = 'plugins-' + (version.endsWith('SNAPSHOT') ? 'snapshot' : 'release') + '-local'
+            // The Artifactory repository key to publish to
             username = "${artifactory_user}" // The publisher user name
             password = "${artifactory_password}" // The publisher password
             maven = true
@@ -226,18 +229,18 @@ artifactory {
 artifactoryPublish.dependsOn distZip
 
 installDist {
-  installDist {
-    destinationDir = file('build/plugin')
-    doLast {
-        copy {
-            fileMode 0755
-            from 'build/dependency-cache/extracted'
-            from 'build/plugin'
-            into 'build/install'
-        	}
-    	} 
+    installDist {
+        destinationDir = file('build/plugin')
+        doLast {
+            copy {
+                fileMode 0755
+                from 'build/dependency-cache/extracted'
+                from 'build/plugin'
+                into 'build/install'
+            }
+        }
     }
-    
+
 }
 
 
@@ -257,8 +260,8 @@ task runApp(type: JavaExec) {
     jvmArgs = ['-Xmx4000M', '-Xss1024M', '-DLOCALCONFIG=true', '-DWINCONFIG=true', '-Djsse.enableSNIExtension=false', '-Djava.net.preferIPv4Stack=true', '-Dcom.sun.media.imageio.disableCodecLib=true', '-noverify', '-Dlocal.config.dir.ext=-dev', '-splash:data/splash.png', '-Dmd.class.path=$java.class.path', '-Dcom.nomagic.osgi.config.dir=configuration', '-Desi.system.config=data/application.conf', '-Dlogback.configurationFile=data/logback.xml', '-Dsun.locale.formatasdefault=true']
     // arguments to pass to the application
     args 'DEVELOPER'
-    
-    
+
+
 }
 
 runApp.dependsOn installDist

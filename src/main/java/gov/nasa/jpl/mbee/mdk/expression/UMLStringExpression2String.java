@@ -1,52 +1,51 @@
 package gov.nasa.jpl.mbee.mdk.expression;
 
+import com.nomagic.uml2.ext.magicdraw.auxiliaryconstructs.mdtemplates.StringExpression;
+import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.*;
+
 import java.util.List;
 
-import com.nomagic.uml2.ext.magicdraw.auxiliaryconstructs.mdtemplates.StringExpression;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ElementValue;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralInteger;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralReal;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.LiteralString;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.NamedElement;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.ValueSpecification;
-
 public class UMLStringExpression2String extends UML2String {
-	
-	
-	public UMLStringExpression2String(ValueSpecification root){
-		super(root);
-	}
-	
-	public String parse(){	
-		parse0(root);
-		return strg;
-	}
-	
-	private void parse0(ValueSpecification n){
-		if(n instanceof StringExpression ) {
-			List<ValueSpecification> ops = ((StringExpression)n).getOperand();
-			for ( int i = 0; i < ops.size(); i++ ){
-				parse0(ops.get(i));
-			}
-		} else if(n instanceof ElementValue){	//leaf
-			String ev = ((NamedElement)((ElementValue)n).getElement()).getName();
-			ev = ev.replace("|", "\u2223"); //having | character having problem with creating xml
-			
-			strg += ev;	//get operand
-			return;
-		
-		} else if(n instanceof LiteralString ) { //"(" is LiteralString
-			strg += ((LiteralString)n).getValue();
-			return;
-		} else if(n instanceof LiteralReal){		//leaf
-			strg += ((LiteralReal)n).getValue();	//get literal real
-			return;
-		} else if ( n instanceof LiteralInteger){
-			strg += ((LiteralInteger)n).getValue();	//get literal integer
-			return;
-		} 
-		
-	}
+
+
+    public UMLStringExpression2String(ValueSpecification root) {
+        super(root);
+    }
+
+    public String parse() {
+        parse0(root);
+        return strg;
+    }
+
+    private void parse0(ValueSpecification n) {
+        if (n instanceof StringExpression) {
+            List<ValueSpecification> ops = ((StringExpression) n).getOperand();
+            for (int i = 0; i < ops.size(); i++) {
+                parse0(ops.get(i));
+            }
+        }
+        else if (n instanceof ElementValue) {    //leaf
+            String ev = ((NamedElement) ((ElementValue) n).getElement()).getName();
+            ev = ev.replace("|", "\u2223"); //having | character having problem with creating xml
+
+            strg += ev;    //get operand
+            return;
+
+        }
+        else if (n instanceof LiteralString) { //"(" is LiteralString
+            strg += ((LiteralString) n).getValue();
+            return;
+        }
+        else if (n instanceof LiteralReal) {        //leaf
+            strg += ((LiteralReal) n).getValue();    //get literal real
+            return;
+        }
+        else if (n instanceof LiteralInteger) {
+            strg += ((LiteralInteger) n).getValue();    //get literal integer
+            return;
+        }
+
+    }
 }
 /*
 private void parse0(ValueSpecification n){
