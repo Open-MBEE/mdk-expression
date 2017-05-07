@@ -113,12 +113,8 @@ class PreDist extends DefaultTask {
             into "build/generated-dist/plugins/${groupId}"
         }
 
-        String pluginLibraries = ''
-        project.fileTree(dir: "build/generated-dist/plugins/${groupId}", include: '**/*.jar').each { file ->
-            pluginLibraries += '\t\t<library name=\"' + file.absolutePath.replaceAll(~/.*build\/generated-dist\/plugins\/${
-                groupId
-            }\//, '') + '\"/>' + System.lineSeparator()
-        }
+        pluginLibraries += '\t\t<library name=\"' + file.absolutePath.replaceAll(~/.*build\/generated-dist\/plugins\/${groupId}\//, '') + '\"/>' + System.lineSeparator()
+
         project.copy {
             from "src/main/dist/template/plugins/${groupId}/plugin.xml"
             filter { String line -> line.replace('<!-- START AUTO-GENERATED -->', '<!-- START AUTO-GENERATED -->' + System.lineSeparator() + System.lineSeparator() + pluginLibraries) }
@@ -229,18 +225,15 @@ artifactory {
 artifactoryPublish.dependsOn distZip
 
 installDist {
-    installDist {
-        destinationDir = file('build/plugin')
-        doLast {
-            copy {
-                fileMode 0755
-                from 'build/dependency-cache/extracted'
-                from 'build/plugin'
-                into 'build/install'
-            }
+    destinationDir = file('build/plugin')
+    doLast {
+        copy {
+            fileMode 0755
+            from 'build/dependency-cache/extracted'
+            from 'build/plugin'
+            into 'build/install'
         }
     }
-
 }
 
 
