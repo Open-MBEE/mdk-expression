@@ -166,6 +166,7 @@ public final class AsciiMathParser {
         final AsciiMathParser parser = new AsciiMathParser();
         final Document result = parser.parseAsciiMath(asciiMathInput);
 
+        System.out.println(inputBuilder.toString());
         System.out.println(XmlUtilities.serializeMathmlDocument(result));
     }
 }

@@ -12,67 +12,18 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Element;
 
 public class LibrarySelector {
 	
-	String ASCII_LIBRARY = "Block asciiMathOperatorLibrary";
-	String CUSTOM_FUNC = "Block customFunctions";
+	static final String ASCII_LIBRARY = "Block asciiMathOperatorLibrary";
+	static final String CUSTOM_FUNC = "Block customFunctions";
+	
+	Element a;
+	Element c;
 	
 	public LibrarySelector(){
-		
 	}
-/*	
-	private boolean getAsciiMathBlock(){
-		boolean set = false;
-		Frame dialogParent = MDDialogParentProvider.getProvider().getDialogParent();
-		ElementSelectionDlg dlgAM = ElementSelectionDlgFactory.create(dialogParent);
-		ElementSelectionDlgFactory.initMultiple(dlgAM, new SelectElementTypes(null, null), new SelectElementInfo(true, false, null, true), new Object[0]);
-		dlgAM.setName("Select AsciiMath Library");
-		
-		dlgAM.show();	
-		if (dlgAM.isOkClicked()){
-			// Get selected elements in multiple selection mode
-			java.util.List<BaseElement> selected1 = dlgAM.getSelectedElements();
-			if(selected1.size() != 1){
-				javax.swing.JOptionPane.showMessageDialog(null, "Wrong Selection!\nSelect AsciiMath Block!");
-				getAsciiMathBlock();
-			}else{
-			java.util.Iterator<BaseElement> selIt = selected1.iterator();
-			while(selIt.hasNext()){
-				Element el = (Element) selIt.next();
-				AddContextMenuButton.asciiMathLibraryBlock = el;
-			}
-			set = true;
-			}
-		}else {
-			return false;
-		}
-		return set;
-	}
-	
-	private boolean getCustFuncBlock(){
-		Frame dialogParent = MDDialogParentProvider.getProvider().getDialogParent();
-		ElementSelectionDlg dlgCF = ElementSelectionDlgFactory.create(dialogParent);
-		ElementSelectionDlgFactory.initMultiple(dlgCF, new SelectElementTypes(null, null), new SelectElementInfo(true, false, null, true), new Object[0]);
-		dlgCF.setName("Select Customized Functions");
-		
-		dlgCF.show();
-		if (dlgCF.isOkClicked()){
-			// Get selected elements in multiple selection mode
-			java.util.List<BaseElement> selected1 = dlgCF.getSelectedElements();
-			if(selected1.size() != 1){
-				javax.swing.JOptionPane.showMessageDialog(null, "Wrong Selection!\nSelect Customized Function Block!");
-				getCustFuncBlock();
-			}
-			java.util.Iterator<BaseElement> selIt = selected1.iterator();
-			while(selIt.hasNext()){
-				Element el = (Element) selIt.next();
-				AddContextMenuButton.customFuncBlock = el;
-			}
-			return true;
-		}else {
-			return false;
-		}
-	}
-*/	
-	public boolean openDialog(){
+	public Element getAsciiLibrary() { return a;}
+	public Element getCustomFunction() { return c;}
+	public boolean openDialog()
+	{
 		//Use ElementSelectionDlgFactory.create(...) methods to create element selection dialog
 		Frame dialogParent = MDDialogParentProvider.getProvider().getDialogParent();
 		ElementSelectionDlg dlgAM = ElementSelectionDlgFactory.create(dialogParent);
@@ -98,8 +49,9 @@ public class LibrarySelector {
 				}
 			java.util.Iterator<BaseElement> selIt = selected1.iterator();
 			while(selIt.hasNext()){
-				Element el = (Element) selIt.next();
-				AddContextMenuButton.asciiMathLibraryBlock = el;
+				a = (Element) selIt.next();
+				//Element el = (Element) selIt.next();
+				//MDKExpressionPlugin.asciiMathLibraryBlock = el;
 			}
 			
 		}else {
@@ -116,23 +68,14 @@ public class LibrarySelector {
 				}
 			java.util.Iterator<BaseElement> selIt = selected1.iterator();
 			while(selIt.hasNext()){
-				Element el = (Element) selIt.next();
-				AddContextMenuButton.customFuncBlock = el;
+				//Element el = (Element) selIt.next();
+				//MDKExpressionPlugin.customFuncBlock = el;
+				c = (Element) selIt.next();
 			}
 			return true;
 		}else {
 			return false;
 		}
-	
-/*		
-		if(getAsciiMathBlock()){
-			if(getCustFuncBlock()){
-				return true;
-			}
-		}
-		
-		return false;
-*/		
 	}
 	
 }
