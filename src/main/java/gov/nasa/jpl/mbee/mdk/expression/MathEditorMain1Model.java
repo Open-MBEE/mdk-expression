@@ -78,7 +78,7 @@ public class MathEditorMain1Model {
 		if ( this.currentConstraint.getName().compareTo(_name) != 0)
 			this.currentConstraint.setName(_name);
 	}
-	
+	//setting editExpression from MD object
 	private void setExpression() {
 		
 		//*******************************SHOULD EDIT?****************************************
@@ -111,9 +111,13 @@ public class MathEditorMain1Model {
 			this.editExpression =  "";
 		}
 	}
-	
+
 	public String getEditExpression() {
 		return this.editExpression;
+	}
+	//called when the expression is successfully saved in MD
+	public void setExpression(String exp) {
+		this.editExpression = exp;
 	}
 	public boolean isStringExpression(){ //for selecting "prefix Exp" or "infix String Exp" radio button 
 		return this.isStringExpression;

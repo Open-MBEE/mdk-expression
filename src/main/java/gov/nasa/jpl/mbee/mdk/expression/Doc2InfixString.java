@@ -136,6 +136,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 			if (n == null)
 				break;
 		}
+
 		if ( s.length() == 1 && ( s.equals("f")|| s.equals("g")) ) {
 			String bracketEnclosedString = isNextSiblingMRowEnclosedbyBrackets(n); //(n at this point is original n's sibiling) f(x) or g(x+y)... 
 			if ( bracketEnclosedString != null) {
@@ -150,7 +151,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 		
 		ElementValue ev;
 		Node msub_or_msubsup;
-		if(previous_node != null ) {
+		if(previous_node != null ) { //for z1_12^34, the argument passed n = <mi>z</mi> case previous_node is <mi>z</mi>
 		//msub
 			//xy_123 <mi>x <msub><mi>y</mi> <mn>123</mn> </msub> previous_node is x
 			//x1_12 <mi>x</mi><msub><mn>1</mn><mn>12</mn></msub>
@@ -163,7 +164,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 			if ((msub_or_msubsup = previous_node.getNextSibling()) != null ) {
 				if ( msub_or_msubsup.getNodeName().equals("mrow"))
 				{
-					msub_or_msubsup = msub_or_msubsup.getFirstChild();
+					msub_or_msubsup = msub_or_msubsup.getFirstChild(); //<mrow><msubsup>.... so get <msubsup>
 					ismrow = true;
 				}
 				if ( msub_or_msubsup.getNodeName().equals("msub") || msub_or_msubsup.getNodeName().equals("msubsup"))
@@ -543,16 +544,65 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 				if(nl.size() != 2) { //2 children arguments 
 					throw new Exception ("Not supported - problem in " + n + ". The function should have two arguments.");
 				}
+				String s = "";
 				//x_12(constraint parameter)
-				if (nl.get(0).getNodeName().equals("mi") ) {//may like be x_1
-					if ( nl.get(1).getNodeName().equals("mn") || nl.get(1).getNodeName().equals("mi")){ //x_1 or a_i
-						String s= toStringFromUnicodeMI(nl.get(0).getFirstChild().getNodeValue()) + "_" + toStringFromUnicodeMI(nl.get(1).getFirstChild().getNodeValue());
-						ElementValue ev = createElementValueFromOperands(s, controller.getConstraintBlock());
-						if ( ev != null)
-							return new Vs(ev, 0);
+				if (nl.get(0).getNodeName().equals("mi") ) {//may like be x_1 or x_y2xzz5
+					String s1 = "", t;
+					int i = -1;
+
+					if ( nl.get(1).getNodeName().equals("mn") || nl.get(1).getNodeName().equals("mi") )
+					{ //x_1 or a_i
+						s = toStringFromUnicodeMI(nl.get(0).getFirstChild().getNodeValue()) + "_" + toStringFromUnicodeMI(nl.get(1).getFirstChild().getNodeValue()); //x_1 or x_y
+						Node tempNode = n.getNextSibling();
+						if ( tempNode != null) //tempNode is null when x_1 or x_y
+						{
+							while ((t = tempNode.getNodeName()).equals("mi") || t.equals("mn"))
+							{
+								s1 += this.toStringFromUnicodeMI(tempNode.getFirstChild().getNodeValue()); //adding 2,x,z,z,5
+								i++;
+								tempNode = tempNode.getNextSibling();
+								if (tempNode == null)
+									break;
+							}
+						}
 					}
-					//msub with 1st child mi must be a constraint parameter (ie., x_1)
-					throw new Exception (nl.get(0).getFirstChild().getNodeValue() + "_" + nl.get(1).getFirstChild().getNodeValue() + " is not a constraint parameter.");
+					else if ( nl.get(1).getNodeName().equals("mrow")) //x_(y2322ii)
+					{
+						s = toStringFromUnicodeMI(nl.get(0).getFirstChild().getNodeValue()) + "_"; //x_
+						Node tempNode = nl.get(1).getFirstChild(); // for y
+						if (tempNode != null)
+						{
+							//x_(y2), x_(y123zz4)
+							t = tempNode.getNodeName(); //y for x_(y2)
+							while (t.equals("mi") || t.equals("mn") || (t.equals("mo") && tempNode.getFirstChild().getNodeValue().equals("×"))) // z_(xxx12x) x after () is <mo>×</mo> - multiplication character (Alt-0215)
+							{
+								s1 += this.toStringFromUnicodeMI(tempNode.getFirstChild().getNodeValue());//y,2 for x_(y2) or 2,3,2,2,i,i for x_(y232ii)
+
+								/*
+								byte[] utf8Bytes = tempNode.getFirstChild().getNodeValue().getBytes("UTF8");
+								byte[] defaultBytes = tempNode.getFirstChild().getNodeValue().getBytes();
+								printBytes(utf8Bytes, "utf8Bytes");
+								System.out.println();
+								printBytes(defaultBytes, "defaultBytes");
+								*/
+								tempNode = tempNode.getNextSibling();
+								if (tempNode == null)
+									break;
+								else
+									t = tempNode.getNodeName();
+							}
+							s1 = "(" + s1 + ")";
+						}
+					} //end of mrow
+					if (s1.length() != 0)
+						s = s + s1;
+					if ( s.length() == 0 ) //like 1_1 or x_*
+						throw new Exception (nl.get(0).getFirstChild().getNodeValue() + "_" + nl.get(1).getFirstChild().getNodeValue() + " is not a constraint parameter.");
+					ElementValue ev = createElementValueFromOperands(s, controller.getConstraintBlock());
+					if ( ev != null)
+						return new Vs(ev, i+1);
+					else
+						return createConstraintParameter(s, i+1); //ask to create if not exist like z_y
 				}
 				// not a constraint parameter like x_1 or a_i
 				tempVs = processNode(nl.get(0), false);
@@ -674,14 +724,48 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 					tempVs = processNode(nl.get(0) + nl.get(1), false);
 				}
 				*/
-				if ( !nl.get(0).getNodeName().equals("mi"))//case like "x1_12^34" need to be "(x1)_12^34" to be supported.
+				//<mo>unicode sum</mo>
+				if ( !nl.get(0).getNodeName().equals("mi") && !nl.get(0).getNodeName().equals("mo"))//case like "x1_12^34" need to be "(x1)_12^34" to be supported.
 					throw new Exception("Invalid sub-superscript( " + nl.get(0).getNodeName() + ").  Please put () around the operand.");
-				else if ( nl.get(0).getNodeName().equals("mi")){
-					tempVs = processNode(nl.get(0), true);
+				else if ( nl.get(0).getNodeName().equals("mo")){
+					return processNode(nl.get(0), false);
 				}
+				else if ( nl.get(0).getNodeName().equals("mi"))
+				{  //x_12^34
 
+					Node firstChild = nl.get(0); //x
+					Node secondChild = firstChild.getNextSibling(); //12
+					if (firstChild.getNodeName().equals("mi")
+							&&
+							(secondChild.getNodeName().equals("mi") || secondChild.getNodeName().equals("mn"))
+							)
+					{
+						String s = toStringFromUnicodeMI(firstChild.getFirstChild().getNodeValue()) + "_" + toStringFromUnicodeMI(secondChild.getFirstChild().getNodeValue());
+						ElementValue ev = createElementValueFromOperands(s, controller.getConstraintBlock());
+						expNew = getExpression();
+						if (ev != null)
+							expNew.getOperand().add(ev);
+						else
+						{
+							Vs xx = createConstraintParameter(s, 0); //of set is not used
+							if (xx != null)
+								expNew.getOperand().add(xx.value);
+						}
+						Node thirdChild = secondChild.getNextSibling();
+						expNew.getOperand().add(createElementValueFromOperation(Doc2InfixStringUtil.FN.get("msup"))); //adding ^
 
+						tempVs = processNode(thirdChild, true);
+						if (tempVs == null)
+							throw new Exception("Not supported - problem in " + thirdChild.getFirstChild().getNodeValue());
+						expNew.getOperand().add(tempVs.value);
+						return new Vs(expNew, 0);
 
+					}
+				}
+				throw new Exception("Not Supported.");
+				//tempVs = processNode(nl.get(0), true);
+
+				/*
 				if ( tempVs == null)
 					throw new Exception ("Invalid sub-superscript( " + nl.get(0).getNodeName() + ").  Please put () around the operand.");
 				expNew.getOperand().add(tempVs.value);
@@ -696,6 +780,7 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 						expNew = createAndAddElementValueToExpression_asciiMathLibraryBlock(expNew, "^");//"^ or "_"
 				}
 				return new Vs(expNew, 0);
+				*/
 			}
 			else if (n.getNodeName().equals("mtd")){
 				Expression expNew = getExpression();
@@ -892,5 +977,11 @@ public class Doc2InfixString  extends Tree2UMLExpression {
 		lReal.setValue(lRealDouble);
 		return lReal;
 	}
-		
+
+	/*public static void printBytes(byte[] array, String name) {
+		for (int k = 0; k < array.length; k++) {
+			System.out.println(name + "[" + k + "] = " + "0x" +
+					UnicodeFormatter.byteToHex(array[k]));
+		}
+	}*/
 }

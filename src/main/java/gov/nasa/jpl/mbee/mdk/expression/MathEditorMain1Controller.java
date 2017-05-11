@@ -25,7 +25,7 @@ import net.sourceforge.jeuclid.converter.Converter;
 
 public class MathEditorMain1Controller implements ActionListener {
 	
-	private static boolean DEBUG = true;
+	private static boolean DEBUG = false;
 	private MathEditorMain1Model model;
 	private MathEditorMain1Controller controller;
 	private MathEditorMain1  view;
@@ -165,9 +165,11 @@ public class MathEditorMain1Controller implements ActionListener {
 					AsciiMathParser amp = new AsciiMathParser();
 					Document docExp = amp.parseAsciiMath(textExpression/*, opt*/);
 					render(docExp, false);
+					this.model.setExpression(textExpression);
 						
 					if(!t2uml.getError()){
 						vs.setOwner(this.model.currentConstraint);
+						this.model.setExpression(textExpression);
 					}
 	
 				} 
@@ -220,6 +222,7 @@ public class MathEditorMain1Controller implements ActionListener {
 						
 						render(newDocExp, false);
 						//render(docExp, false);
+						this.model.setExpression(textExpression);
 						
 					} catch (Exception e2) {
 						// TODO Auto-generated catch block
@@ -230,7 +233,7 @@ public class MathEditorMain1Controller implements ActionListener {
 				        {  
 				        	docExp.getFirstChild().appendChild(createMrowMessage(docExp, "(Invalid!)"));
 				            render(docExp, true);
-				        } catch (Exception ee) {  
+				        } catch (Exception ee) {
 				        	ee.printStackTrace();
 				        } 
 					}
