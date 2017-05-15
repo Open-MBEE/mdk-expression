@@ -36,7 +36,7 @@ public class Doc2InfixStringUtil {
     ;
 
 /*	
-	//mover tag
+    //mover tag
 //	<mover>
 //  <mi>y</mi>
 //  <mo>..</mo>

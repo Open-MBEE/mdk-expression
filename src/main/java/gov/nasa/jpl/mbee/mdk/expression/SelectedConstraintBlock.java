@@ -49,7 +49,7 @@ public class SelectedConstraintBlock {
 
     public Property getOperand(String _lookingfor) { //Property.get() throws NoSuchElementException if not found
     /*	getOperands().stream().forEach(e->{
-			System.out.println(((NamedElement)e).getName());
+            System.out.println(((NamedElement)e).getName());
 		});*/
 
         Optional<Property> p = getOperands().stream()

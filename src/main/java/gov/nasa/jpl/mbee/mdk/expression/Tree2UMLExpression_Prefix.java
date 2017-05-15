@@ -42,7 +42,7 @@ public class Tree2UMLExpression_Prefix extends Tree2UMLExpression {
 
 			
 			/*Expression exp = createExpression(n.getChild(1).getText(), AddContextMenuButton.asciiMathLibraryBlock);
-			if (exp != null){
+            if (exp != null){
 				//*********************************TRAVERSE*************************************
 				exp.getOperand().add(traverse0(n.getChild(0)));	//left child
 				exp.getOperand().add(traverse0(n.getChild(2)));	//right child

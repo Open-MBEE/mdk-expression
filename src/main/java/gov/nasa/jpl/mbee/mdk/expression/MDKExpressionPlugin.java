@@ -155,7 +155,7 @@ public class MDKExpressionPlugin extends Plugin {
         public void actionPerformed(ActionEvent e) {
             //*********************************SET LIBRARY IF NECESSARY********************************
             /*if(MDKExpressionPlugin.asciiMathLibraryBlock == null || MDKExpressionPlugin.customFuncBlock == null){
-				LibrarySelector ls = new LibrarySelector();
+                LibrarySelector ls = new LibrarySelector();
 				if(!ls.openDialog()){return; }
 			}*/
             if (selectedOperationBlocks == null) {

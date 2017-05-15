@@ -15,7 +15,7 @@ public class MDSysMLConstants {
     static {
         suffixParentheses1 = Arrays.asList(
                   /* standard functions */"Lim", "sin", "cos", "tan", "sinh", "cosh", "tanh", "cot", "sec", "csc", "arcsin", "arccos", "arctan", "coth", "sech", "csch", "exp", "abs", "norm", "floor", "ceil", "log", "ln", "det", "dim", "mod", "gcd", "lcm", "lub", "glb", "min", "max",
-				  /*commands with argument*/"sqrt", "root", "dot", "ddot", "text", "mbox", "cancel"
+                  /*commands with argument*/"sqrt", "root", "dot", "ddot", "text", "mbox", "cancel"
         );
         suffixParentheses2 = Arrays.asList(
 				  /*commands with argument */"color", "frac"
