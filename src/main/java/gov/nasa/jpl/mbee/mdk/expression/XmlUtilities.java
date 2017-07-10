@@ -19,21 +19,16 @@
  */
 package gov.nasa.jpl.mbee.mdk.expression;
 
-import java.io.StringWriter;
+import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
+import java.io.StringWriter;
 
 /**
  * Some basic XML helpers.
@@ -47,15 +42,14 @@ final class XmlUtilities {
      * if such a thing cannot be created/configured.
      *
      * @throws AsciiMathParserException if a namespace-aware DOM {@link DocumentBuilder}
-     *   could not be created.
+     *                                  could not be created.
      */
     public static DocumentBuilder createNSAwareDocumentBuilder() {
         final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setNamespaceAware(true);
         try {
             return documentBuilderFactory.newDocumentBuilder();
-        }
-        catch (final ParserConfigurationException e) {
+        } catch (final ParserConfigurationException e) {
             throw new AsciiMathParserException("Could not create Namespace-aware DocumentBuilder", e);
         }
     }
@@ -69,8 +63,7 @@ final class XmlUtilities {
         TransformerFactory transformerFactory = null;
         try {
             transformerFactory = TransformerFactory.newInstance();
-        }
-        catch (final TransformerFactoryConfigurationError e) {
+        } catch (final TransformerFactoryConfigurationError e) {
             throw new AsciiMathParserException(e);
         }
         /* Make sure we have DOM-based features */
@@ -96,11 +89,11 @@ final class XmlUtilities {
      * both Saxon and Xalan.
      *
      * @param transformer {@link Transformer} to configure
-     * @param indent required indentation, where 0 or more provides indentation and negative
-     *   numbers turns indentation off.
+     * @param indent      required indentation, where 0 or more provides indentation and negative
+     *                    numbers turns indentation off.
      */
     public static void setIndentation(final Transformer transformer, final int indent) {
-        if (indent>=0) {
+        if (indent >= 0) {
             final String indentString = String.valueOf(indent);
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
@@ -122,8 +115,7 @@ final class XmlUtilities {
             XmlUtilities.setIndentation(transformer, 2);
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             transformer.transform(new DOMSource(mathml), new StreamResult(stringWriter));
-        }
-        catch (final TransformerException e) {
+        } catch (final TransformerException e) {
             throw new AsciiMathParserException("Could not serialize MathML DOM", e);
         }
         return stringWriter.toString();

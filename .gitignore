@@ -1,4 +1,4 @@
 build
 .gradle
-.idea/workspace.xml
-/bin/
+.idea
+.DS_Store

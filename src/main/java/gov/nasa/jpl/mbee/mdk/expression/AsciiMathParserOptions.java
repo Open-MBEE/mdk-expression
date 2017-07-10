@@ -69,7 +69,7 @@ public final class AsciiMathParserOptions implements Serializable {
      * original ASCIIMath source.
      *
      * @param addSourceAnnotation true if an ASCIIMath source annotation should be included,
-     *   false otherwise.
+     *                            false otherwise.
      */
     public void setAddSourceAnnotation(final boolean addSourceAnnotation) {
         this.addSourceAnnotation = addSourceAnnotation;

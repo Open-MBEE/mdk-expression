@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<resourceDescriptor critical="false" date="2016-08-23-07:00" description="Model Development Kit for Expressions" group="Jet Propulsion Laboratory, Caltech" homePage="" id="75689" mdVersionMax="higher" mdVersionMin="18.0" name="MDK Expression" product="MDK Expression" restartMagicdraw="true" type="Plugin">
+<resourceDescriptor critical="false" date="2016-08-23-07:00" description="Model Development Kit for Expressions"
+                    group="Jet Propulsion Laboratory, Caltech" homePage="" id="75689" mdVersionMax="higher"
+                    mdVersionMin="18.0" name="MDK Expression" product="MDK Expression" restartMagicdraw="true"
+                    type="Plugin">
     <version human="${human.version}" internal="${internal.version}" resource="10"/>
     <provider email="" homePage="" name="Jet Propulsion Laboratory, Caltech"/>
     <edition>Reader</edition>

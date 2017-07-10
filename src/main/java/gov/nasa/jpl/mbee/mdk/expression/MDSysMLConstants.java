@@ -4,25 +4,25 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MDSysMLConstants {
-	
-	public static final String CONSTRAINTPARAMETER = "ConstraintParameter";
-	public static final String CONSTRAINTBLOCK = "ConstraintBlock";
-	public static final String OPERATION = "Operation";
-	
-	static List<String> suffixParentheses1;
-	static List<String> suffixParentheses2;
 
-	  static {
-		  suffixParentheses1 = Arrays.asList(
-				  /* standard functions */"Lim", "sin", "cos", "tan", "sinh", "cosh", "tanh", "cot", "sec", "csc", "arcsin", "arccos", "arctan", "coth", "sech", "csch", "exp", "abs", "norm", "floor", "ceil", "log", "ln", "det", "dim", "mod", "gcd", "lcm", "lub", "glb", "min", "max",
-				  /*commands with argument*/"sqrt", "root", "dot", "ddot", "text", "mbox", "cancel"
-				  ); 
-		  suffixParentheses2 = Arrays.asList(
+    public static final String CONSTRAINTPARAMETER = "ConstraintParameter";
+    public static final String CONSTRAINTBLOCK = "ConstraintBlock";
+    public static final String OPERATION = "Operation";
+
+    static List<String> suffixParentheses1;
+    static List<String> suffixParentheses2;
+
+    static {
+        suffixParentheses1 = Arrays.asList(
+                  /* standard functions */"Lim", "sin", "cos", "tan", "sinh", "cosh", "tanh", "cot", "sec", "csc", "arcsin", "arccos", "arctan", "coth", "sech", "csch", "exp", "abs", "norm", "floor", "ceil", "log", "ln", "det", "dim", "mod", "gcd", "lcm", "lub", "glb", "min", "max",
+                  /*commands with argument*/"sqrt", "root", "dot", "ddot", "text", "mbox", "cancel"
+        );
+        suffixParentheses2 = Arrays.asList(
 				  /*commands with argument */"color", "frac"
-				  );
-	  }
+        );
+    }
 
-	//commands with argument
+    //commands with argument
 	/*  {input:"sqrt", tag:"msqrt", output:"sqrt", tex:null, ttype:UNARY},
 	  {input:"root", tag:"mroot", output:"root", tex:null, ttype:BINARY},
 	  {input:"frac", tag:"mfrac", output:"/",    tex:null, ttype:BINARY},
@@ -60,7 +60,7 @@ public class MDSysMLConstants {
 	        return fName;
 	    }
 	}*/
-	
-	//standard functions
-	
+
+    //standard functions
+
 }
