@@ -65,7 +65,7 @@ public class MDKExpressionPlugin extends Plugin {
                                           PresentationElement requestor) {
 
                         //if constraint block is selected show a menu ("Constraint Editor")
-                        if (requestor != null && selected.length == 1) {
+                        if (requestor != null && selected.length == 1 && selected[0].getElement() != null) {
                             if (StereotypesHelper.hasStereotype(selected[0].getElement(), MDSysMLConstants.CONSTRAINTBLOCK)) {
                                 setupMenuForConstraintBlock(manager, (Element) selected[0].getElement());
                             }
