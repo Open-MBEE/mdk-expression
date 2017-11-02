@@ -89,7 +89,7 @@ public class MDKExpressionPlugin extends Plugin {
                         com.nomagic.magicdraw.ui.browser.Node selectednode = browser.getSelectedNode();
                         if (selectednode != null) {
                             Object o = selectednode.getUserObject();
-                            if (o != null && StereotypesHelper.hasStereotype((Element) o, MDSysMLConstants.CONSTRAINTBLOCK)) {    //from tree knows constraint block
+                            if (o instanceof Element && StereotypesHelper.hasStereotype((Element) o, MDSysMLConstants.CONSTRAINTBLOCK)) {    //from tree knows constraint block
                                 setupMenuForConstraintBlock(manager, (Element) o);
                             }
                             else if (o instanceof Constraint) {
