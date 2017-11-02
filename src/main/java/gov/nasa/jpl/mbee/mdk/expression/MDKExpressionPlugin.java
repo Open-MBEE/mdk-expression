@@ -65,7 +65,7 @@ public class MDKExpressionPlugin extends Plugin {
                                           PresentationElement requestor) {
 
                         //if constraint block is selected show a menu ("Constraint Editor")
-                        if (requestor != null && selected.length == 1) {
+                        if (requestor != null && selected.length == 1 && selected[0].getElement() != null) {
                             if (StereotypesHelper.hasStereotype(selected[0].getElement(), MDSysMLConstants.CONSTRAINTBLOCK)) {
                                 setupMenuForConstraintBlock(manager, (Element) selected[0].getElement());
                             }
@@ -89,7 +89,7 @@ public class MDKExpressionPlugin extends Plugin {
                         com.nomagic.magicdraw.ui.browser.Node selectednode = browser.getSelectedNode();
                         if (selectednode != null) {
                             Object o = selectednode.getUserObject();
-                            if (StereotypesHelper.hasStereotype((Element) o, MDSysMLConstants.CONSTRAINTBLOCK)) {    //from tree knows constraint block
+                            if (o instanceof Element && StereotypesHelper.hasStereotype((Element) o, MDSysMLConstants.CONSTRAINTBLOCK)) {    //from tree knows constraint block
                                 setupMenuForConstraintBlock(manager, (Element) o);
                             }
                             else if (o instanceof Constraint) {
