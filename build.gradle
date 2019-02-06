@@ -76,7 +76,7 @@ dependencies {
     compile group: 'net.sourceforge.jeuclid', name: 'jeuclid-core', version: '3.1.9'
     // Test Dependencies
     //testCompile 'junit:junit:4.11'
-    testCompile group: 'org.gradle', name: 'gradle-core', version: '5.2'
+    testCompile group: 'org.gradle', name: 'gradle-core', version: '3.1'
     
     compile group: 'org.antlr', name: 'antlr4', version: '4.5.3'
 
