@@ -21,11 +21,8 @@ jobs:
           command: echo "$CACHE_VERSION" >> gradle.properties
       # Dependency caching
       - restore_cache:
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - gradle-repo-v4-{{ .Branch }}-{{ checksum "gradle.properties" }}
-            - gradle-repo-v4-{{ .Branch }}-
-            - gradle-repo-v4-
+          key: gradle-repo-v4-{{ .Branch }}-{{ checksum "gradle.properties" }}
+
       - run:
           name: Download uncached dependencies
           command: ./gradlew dependencies
