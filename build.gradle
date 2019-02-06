@@ -59,7 +59,7 @@ repositories {
         ivy {
             // http://download1.nomagic.com/magicdraw185sp2/MagicDraw_185_sp2_no_install.zip
             url 'http://download1.nomagic.com/'
-            patternLayout {
+            layout 'pattern', {
                 artifact '/[module][revision]/[classifier].[ext]'
             }
         }
