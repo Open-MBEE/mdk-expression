@@ -16,13 +16,16 @@ jobs:
           name: Log Java version
           command: java -version
 
+      - run:
+          name: Set cache version
+          command: echo "$CACHE_VERSION" >> gradle.properties
       # Dependency caching
       - restore_cache:
           keys:
             # when lock file changes, use increasingly general patterns to restore cache
-            - gradle-repo-${CACHE_VERSION}-{{ .Branch }}-{{ checksum "gradle.properties" }}
-            - gradle-repo-${CACHE_VERSION}-{{ .Branch }}-
-            - gradle-repo-${CACHE_VERSION}-
+            - gradle-repo-v4-{{ .Branch }}-{{ checksum "gradle.properties" }}
+            - gradle-repo-v4-{{ .Branch }}-
+            - gradle-repo-v4-
       - run:
           name: Download uncached dependencies
           command: ./gradlew dependencies
@@ -30,7 +33,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle
-          key: gradle-repo-${CACHE_VERSION}-{{ .Branch }}-{{ checksum "gradle.properties" }}
+          key: gradle-repo-v4-{{ .Branch }}-{{ checksum "gradle.properties" }}
 
       # Compile
       - run:
