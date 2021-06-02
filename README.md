@@ -1,6 +1,6 @@
 # Cameo MDK Expression
 
-[![Download](https://api.bintray.com/packages/openmbee/maven/mdk-expression/images/download.svg)](https://bintray.com/openmbee/maven/mdk-expression/_latestVersion) [![Jira](https://img.shields.io/badge/issues-jira-blue)](https://openmbee.atlassian.net/browse/MDK) [![CircleCI](https://circleci.com/gh/Open-MBEE/mdk-expression.svg?style=shield)](https://circleci.com/gh/Open-MBEE/mdk-expression) [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/Open-MBEE/mdk-expression.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Open-MBEE/mdk-expression/context:java)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/Open-MBEE/mdk-expression?label=download)](https://github.com/Open-MBEE/mdk-expression/releases/latest) [![Jira](https://img.shields.io/badge/issues-jira-blue)](https://openmbee.atlassian.net/browse/MDK) [![CircleCI](https://circleci.com/gh/Open-MBEE/mdk-expression.svg?style=shield)](https://circleci.com/gh/Open-MBEE/mdk-expression) [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/Open-MBEE/mdk-expression.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Open-MBEE/mdk-expression/context:java)
 
 [AsciiMathML](http://asciimath.org/) based expression editor. Cameo MDK Expression is a plugin for [Cameo Systems Modeler](https://www.nomagic.com/products/cameo-systems-modeler) and other No Magic environment bundles.
 
